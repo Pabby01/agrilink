@@ -26,7 +26,7 @@ export interface User {
   avatarInitials: string;
   bio: string;
   phone: string;
-  flagged?: boolean;
+  flagged?: boolean | undefined;
 }
 
 export type ProduceCategory = "Vegetables" | "Grains" | "Tubers" | "Fruits" | "Legumes";
@@ -63,9 +63,9 @@ export interface Order {
   totalPrice: number;
   status: OrderStatus;
   createdAt: string;
-  deliveryId?: string;
-  ratedByBuyer?: boolean;
-  ratedByFarmer?: boolean;
+  deliveryId?: string | undefined;
+  ratedByBuyer?: boolean | undefined;
+  ratedByFarmer?: boolean | undefined;
 }
 
 export type DeliveryStatus = "Pending" | "Accepted" | "Picked Up" | "In Transit" | "Delivered";
@@ -73,7 +73,7 @@ export type DeliveryStatus = "Pending" | "Accepted" | "Picked Up" | "In Transit"
 export interface Delivery {
   id: string;
   orderId: string;
-  transporterId?: string;
+  transporterId?: string | undefined;
   pickup: { label: string; lat: number; lng: number };
   destination: { label: string; lat: number; lng: number };
   distanceKm: number;
@@ -99,5 +99,5 @@ export interface AIInsight {
   question: string;
   answer: string;
   suggestion: string;
-  action?: { label: string; to: string };
+  action?: { label: string; to: string } | undefined;
 }
