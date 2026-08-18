@@ -27,6 +27,7 @@ import { TrustScore } from "@/components/trust/TrustScore";
 import { TrustBreakdown } from "@/components/trust/TrustBreakdown";
 import { AgroMap } from "@/components/map/AgroMap";
 import { NetworkHero } from "@/components/landing/NetworkHero";
+import { HeroBackgroundCarousel } from "@/components/landing/HeroBackgroundCarousel";
 import { useApp } from "@/lib/store";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 import type { TrustProfile } from "@/lib/types";
@@ -127,7 +128,10 @@ function LandingPage() {
       {/* ========================================================================= */}
       {/* SECTION 1 — HERO                                                          */}
       {/* ========================================================================= */}
-      <section className="relative overflow-hidden border-b border-border/70 bg-gradient-to-b from-primary/8 via-accent/5 to-background py-16 sm:py-24">
+      <section className="relative overflow-hidden border-b border-border/70 py-16 sm:py-24">
+        {/* Full-width Responsive Agricultural Carousel Background */}
+        <HeroBackgroundCarousel />
+
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_1fr]">
             <motion.div

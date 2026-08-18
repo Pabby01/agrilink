@@ -157,11 +157,15 @@ export const api = {
   },
 
   produce: {
-    async list(params?: {
-      category?: string | undefined;
-      farmerId?: string | undefined;
-      q?: string | undefined;
-    } | undefined) {
+    async list(
+      params?:
+        | {
+            category?: string | undefined;
+            farmerId?: string | undefined;
+            q?: string | undefined;
+          }
+        | undefined,
+    ) {
       const query = new URLSearchParams();
       if (params?.category) query.set("category", params.category);
       if (params?.farmerId) query.set("farmerId", params.farmerId);

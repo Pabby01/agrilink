@@ -418,8 +418,8 @@ export function AgroMap({
 
     import("leaflet").then((L) => {
       vehicles.forEach((veh) => {
-        const p1: [number, number] =
-          veh.waypoints[veh.currentSegment] ?? veh.waypoints[0] ?? [9.082, 8.6753];
+        const p1: [number, number] = veh.waypoints[veh.currentSegment] ??
+          veh.waypoints[0] ?? [9.082, 8.6753];
         const p2: [number, number] = veh.waypoints[veh.currentSegment + 1] ?? p1;
         const currentPos = interpolateCoords(p1, p2, veh.progress);
         const heading = calculateBearing(p1, p2);
@@ -484,8 +484,8 @@ export function AgroMap({
   const focusVehicle = (veh: MovingVehicle) => {
     setSelectedVehicle(veh);
     if (mapInstanceRef.current) {
-      const p1: [number, number] =
-        veh.waypoints[veh.currentSegment] ?? veh.waypoints[0] ?? [9.082, 8.6753];
+      const p1: [number, number] = veh.waypoints[veh.currentSegment] ??
+        veh.waypoints[0] ?? [9.082, 8.6753];
       const p2: [number, number] = veh.waypoints[veh.currentSegment + 1] ?? p1;
       const currentPos = interpolateCoords(p1, p2, veh.progress);
       mapInstanceRef.current.flyTo(currentPos, 9, { duration: 1 });
