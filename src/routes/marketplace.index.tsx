@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { motion, AnimatePresence } from "framer-motion";
 import { Search } from "lucide-react";
 import { Page, PageHeader } from "@/components/layout/AppShell";
 import { ProduceCard } from "@/components/marketplace/ProduceCard";
@@ -12,12 +13,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useApp } from "@/lib/store";
+import { fadeInUp, staggerFast } from "@/lib/animations";
 import type { ProduceCategory } from "@/lib/types";
 
 export const Route = createFileRoute("/marketplace/")({
   head: () => ({
     meta: [
-      { title: "Marketplace — buy verified Nigerian produce | Agrolink" },
+      { title: "Marketplace — Buy Verified Nigerian Produce | Agrolink" },
       {
         name: "description",
         content:
@@ -76,14 +78,19 @@ function MarketplacePage() {
         subtitle="Every listing shows the farmer's trust score so you know exactly who you are buying from."
       />
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, delay: 0.1 }}
+        className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+      >
         <div className="relative sm:col-span-2 lg:col-span-1">
           <Search
             className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
             aria-hidden
           />
           <Input
-            className="pl-9"
+            className="pl-9 shadow-xs"
             placeholder="Search produce or location"
             aria-label="Search produce"
             value={query}
@@ -91,7 +98,7 @@ function MarketplacePage() {
           />
         </div>
         <Select value={category} onValueChange={setCategory}>
-          <SelectTrigger aria-label="Filter by category">
+          <SelectTrigger aria-label="Filter by category" className="shadow-xs">
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
@@ -103,7 +110,7 @@ function MarketplacePage() {
           </SelectContent>
         </Select>
         <Select value={sort} onValueChange={setSort}>
-          <SelectTrigger aria-label="Sort listings">
+          <SelectTrigger aria-label="Sort listings" className="shadow-xs">
             <SelectValue placeholder="Sort" />
           </SelectTrigger>
           <SelectContent>
@@ -114,7 +121,7 @@ function MarketplacePage() {
           </SelectContent>
         </Select>
         <Select value={availability} onValueChange={setAvailability}>
-          <SelectTrigger aria-label="Filter by availability">
+          <SelectTrigger aria-label="Filter by availability" className="shadow-xs">
             <SelectValue placeholder="Availability" />
           </SelectTrigger>
           <SelectContent>
@@ -122,25 +129,50 @@ function MarketplacePage() {
             <SelectItem value="all">Include unavailable</SelectItem>
           </SelectContent>
         </Select>
+      </motion.div>
+
+      <div className="mt-4 flex items-center justify-between">
+        <p className="text-sm font-medium text-muted-foreground">
+          Showing <span className="text-foreground font-bold">{items.length}</span> verified listing
+          {items.length === 1 ? "" : "s"}
+        </p>
       </div>
 
-      <p className="mt-4 text-sm text-muted-foreground">
-        {items.length} listing{items.length === 1 ? "" : "s"}
-      </p>
-
       {items.length === 0 ? (
-        <div className="mt-10 rounded-xl border border-dashed p-10 text-center">
-          <p className="font-medium">No produce matches your filters.</p>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="mt-10 rounded-2xl border border-dashed p-12 text-center bg-card/40"
+        >
+          <p className="font-display text-lg font-bold">No produce matches your filters.</p>
           <p className="mt-1 text-sm text-muted-foreground">
             Try clearing the search or choosing a different category.
           </p>
-        </div>
+        </motion.div>
       ) : (
-        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {items.map((item) => (
-            <ProduceCard key={item.id} item={item} />
-          ))}
-        </div>
+        <motion.div
+          layout
+          initial="hidden"
+          animate="visible"
+          variants={staggerFast}
+          className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        >
+          <AnimatePresence mode="popLayout">
+            {items.map((item) => (
+              <motion.div
+                key={item.id}
+                layout
+                variants={fadeInUp}
+                initial="hidden"
+                animate="visible"
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.35 }}
+              >
+                <ProduceCard item={item} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
       )}
     </Page>
   );

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { motion } from "framer-motion";
 import {
   ShieldCheck,
   Sprout,
@@ -27,6 +28,7 @@ import { TrustBreakdown } from "@/components/trust/TrustBreakdown";
 import { AgroMap } from "@/components/map/AgroMap";
 import { NetworkHero } from "@/components/landing/NetworkHero";
 import { useApp } from "@/lib/store";
+import { fadeInUp, staggerContainer } from "@/lib/animations";
 import type { TrustProfile } from "@/lib/types";
 
 export const Route = createFileRoute("/")({
@@ -52,7 +54,7 @@ export const Route = createFileRoute("/")({
   component: LandingPage,
 });
 
-export function LandingPage() {
+function LandingPage() {
   const { state } = useApp();
 
   // Selected sample profile for Section 4 (Trust)
@@ -121,41 +123,54 @@ export function LandingPage() {
         : transporterTrust;
 
   return (
-    <div className="flex flex-col gap-20 pb-24 sm:gap-28">
+    <div className="flex flex-col gap-20 pb-24 sm:gap-28 overflow-hidden">
       {/* ========================================================================= */}
       {/* SECTION 1 — HERO                                                          */}
       {/* ========================================================================= */}
       <section className="relative overflow-hidden border-b border-border/70 bg-gradient-to-b from-primary/8 via-accent/5 to-background py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_1fr]">
-            <div className="space-y-6">
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={staggerContainer}
+              className="space-y-6"
+            >
               {/* Eyebrow */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-primary">
-                <span className="size-2 rounded-full bg-primary animate-pulse" />
-                Agricultural Supply-Chain Network
-              </div>
+              <motion.div variants={fadeInUp}>
+                <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-primary shadow-xs">
+                  <span className="size-2 rounded-full bg-primary animate-pulse" />
+                  Agricultural Supply-Chain Network
+                </div>
+              </motion.div>
 
               {/* Headline */}
-              <h1 className="font-display text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl text-balance">
+              <motion.h1
+                variants={fadeInUp}
+                className="font-display text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl text-balance"
+              >
                 The trusted network moving food from{" "}
                 <span className="text-primary underline decoration-gold decoration-wavy decoration-2">
                   farm to market
                 </span>
                 .
-              </h1>
+              </motion.h1>
 
               {/* Supporting Copy */}
-              <p className="max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+              <motion.p
+                variants={fadeInUp}
+                className="max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg"
+              >
                 Agrolink connects farmers, buyers, and transporters in one intelligent network —
                 helping agricultural goods move faster, safer, and smarter.
-              </p>
+              </motion.p>
 
               {/* CTAs */}
-              <div className="flex flex-wrap items-center gap-3 pt-2">
+              <motion.div variants={fadeInUp} className="flex flex-wrap items-center gap-3 pt-2">
                 <Button
                   asChild
                   size="lg"
-                  className="rounded-xl px-7 font-bold shadow-[var(--shadow-lift)]"
+                  className="rounded-xl px-7 font-bold shadow-[var(--shadow-lift)] transition-transform hover:scale-105"
                 >
                   <Link to="/marketplace">
                     Explore Agrolink
@@ -166,14 +181,17 @@ export function LandingPage() {
                   asChild
                   variant="outline"
                   size="lg"
-                  className="rounded-xl px-6 font-semibold"
+                  className="rounded-xl px-6 font-semibold transition-transform hover:scale-105"
                 >
                   <a href="#flow">See how it works</a>
                 </Button>
-              </div>
+              </motion.div>
 
               {/* Trust & Network Indicator Badges */}
-              <div className="grid grid-cols-3 gap-4 border-t pt-6 sm:max-w-md">
+              <motion.div
+                variants={fadeInUp}
+                className="grid grid-cols-3 gap-4 border-t pt-6 sm:max-w-md"
+              >
                 <div>
                   <p className="font-display text-2xl font-bold sm:text-3xl text-foreground">97%</p>
                   <p className="text-xs text-muted-foreground">Fulfilment Rate</p>
@@ -190,13 +208,18 @@ export function LandingPage() {
                   </p>
                   <p className="text-xs text-muted-foreground">Trust Feedback</p>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
-            {/* Hero Interactive 3D Visual (Lightweight SVG + Depth Nodes) */}
-            <div className="relative w-full">
+            {/* Hero Interactive 3D Visual */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+              className="relative w-full"
+            >
               <NetworkHero />
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -204,8 +227,14 @@ export function LandingPage() {
       {/* ========================================================================= */}
       {/* SECTION 2 — THE PROBLEM                                                   */}
       {/* ========================================================================= */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="text-center max-w-3xl mx-auto">
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-80px" }}
+        variants={staggerContainer}
+        className="mx-auto max-w-7xl px-4 sm:px-6"
+      >
+        <motion.div variants={fadeInUp} className="text-center max-w-3xl mx-auto">
           <Badge variant="outline" className="mb-3 uppercase tracking-wider font-bold text-primary">
             The Supply-Chain Challenge
           </Badge>
@@ -216,71 +245,83 @@ export function LandingPage() {
             Agricultural supply chains suffer from poor trust, fragmented coordination, and
             inefficient transit routes.
           </p>
-        </div>
+        </motion.div>
 
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {/* Farmers Problem Card with Liquid Fill Feedback */}
-          <LiquidCard
-            variant="success"
-            className="p-6 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] border-t-4 border-t-success"
-          >
-            <span className="grid size-12 place-items-center rounded-2xl bg-success/15 text-success">
-              <Sprout className="size-6" />
-            </span>
-            <h3 className="mt-4 font-display text-xl font-bold text-foreground">Farmers</h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              "Finding reliable buyers and transportation."
-            </p>
-            <p className="mt-4 text-xs text-muted-foreground leading-relaxed border-t pt-3">
-              Facing unpredictable farm gate prices, spoilage while waiting for haulage, and risk of
-              unverified buyers defaulting.
-            </p>
-          </LiquidCard>
+          <motion.div variants={fadeInUp}>
+            <LiquidCard
+              variant="success"
+              className="h-full p-6 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] border-t-4 border-t-success"
+            >
+              <span className="grid size-12 place-items-center rounded-2xl bg-success/15 text-success">
+                <Sprout className="size-6" />
+              </span>
+              <h3 className="mt-4 font-display text-xl font-bold text-foreground">Farmers</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                "Finding reliable buyers and transportation."
+              </p>
+              <p className="mt-4 text-xs text-muted-foreground leading-relaxed border-t pt-3">
+                Facing unpredictable farm gate prices, spoilage while waiting for haulage, and risk
+                of unverified buyers defaulting.
+              </p>
+            </LiquidCard>
+          </motion.div>
 
           {/* Buyers Problem Card with Liquid Fill Feedback */}
-          <LiquidCard
-            variant="primary"
-            className="p-6 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] border-t-4 border-t-primary"
-          >
-            <span className="grid size-12 place-items-center rounded-2xl bg-primary/15 text-primary">
-              <ShoppingBasket className="size-6" />
-            </span>
-            <h3 className="mt-4 font-display text-xl font-bold text-foreground">Buyers</h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              "Finding reliable suppliers and predictable fulfilment."
-            </p>
-            <p className="mt-4 text-xs text-muted-foreground leading-relaxed border-t pt-3">
-              Dealing with middlemen price gouging, uncertain produce quality grades, and blind
-              transit delays.
-            </p>
-          </LiquidCard>
+          <motion.div variants={fadeInUp}>
+            <LiquidCard
+              variant="primary"
+              className="h-full p-6 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] border-t-4 border-t-primary"
+            >
+              <span className="grid size-12 place-items-center rounded-2xl bg-primary/15 text-primary">
+                <ShoppingBasket className="size-6" />
+              </span>
+              <h3 className="mt-4 font-display text-xl font-bold text-foreground">Buyers</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                "Finding reliable suppliers and predictable fulfilment."
+              </p>
+              <p className="mt-4 text-xs text-muted-foreground leading-relaxed border-t pt-3">
+                Dealing with middlemen price gouging, uncertain produce quality grades, and blind
+                transit delays.
+              </p>
+            </LiquidCard>
+          </motion.div>
 
           {/* Transporters Problem Card with Liquid Fill Feedback */}
-          <LiquidCard
-            variant="gold"
-            className="p-6 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] border-t-4 border-t-gold"
-          >
-            <span className="grid size-12 place-items-center rounded-2xl bg-gold/25 text-gold-foreground">
-              <Truck className="size-6" />
-            </span>
-            <h3 className="mt-4 font-display text-xl font-bold text-foreground">Transporters</h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              "Finding profitable loads and avoiding empty trips."
-            </p>
-            <p className="mt-4 text-xs text-muted-foreground leading-relaxed border-t pt-3">
-              Lacking visibility on return hauls, resulting in deadhead miles, idle fleet capacity,
-              and delayed payments.
-            </p>
-          </LiquidCard>
+          <motion.div variants={fadeInUp}>
+            <LiquidCard
+              variant="gold"
+              className="h-full p-6 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] border-t-4 border-t-gold"
+            >
+              <span className="grid size-12 place-items-center rounded-2xl bg-gold/25 text-gold-foreground">
+                <Truck className="size-6" />
+              </span>
+              <h3 className="mt-4 font-display text-xl font-bold text-foreground">Transporters</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                "Finding profitable loads and avoiding empty trips."
+              </p>
+              <p className="mt-4 text-xs text-muted-foreground leading-relaxed border-t pt-3">
+                Lacking visibility on return hauls, resulting in deadhead miles, idle fleet
+                capacity, and delayed payments.
+              </p>
+            </LiquidCard>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* ========================================================================= */}
       {/* SECTION 3 — THE AGROLINK FLOW (WITH WATER-POURING CARDS)                  */}
       {/* ========================================================================= */}
       <section id="flow" className="border-y border-border/70 bg-card/50 py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="text-center max-w-2xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.5 }}
+            className="text-center max-w-2xl mx-auto"
+          >
             <Badge variant="secondary" className="mb-2 font-bold uppercase tracking-wider">
               The Complete Product Loop
             </Badge>
@@ -291,137 +332,163 @@ export function LandingPage() {
               Every step is designed to keep agricultural trade transparent, coordinated, and
               secure. Tap or hover over any step.
             </p>
-          </div>
+          </motion.div>
 
           {/* 6-Step Visual Loop with Liquid Pouring Feedback */}
-          <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-60px" }}
+            variants={staggerContainer}
+            className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
+          >
             {/* Step 1 */}
-            <LiquidCard
-              variant="primary"
-              className="p-5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-lift)] cursor-pointer"
-            >
-              <div className="flex items-center justify-between">
-                <span className="font-display text-2xl font-extrabold text-primary/50">01</span>
-                <span className="grid size-9 place-items-center rounded-xl bg-primary/10 text-primary">
-                  <Search className="size-4" />
-                </span>
-              </div>
-              <h3 className="mt-3 font-display text-lg font-bold text-foreground uppercase tracking-wide">
-                DISCOVER
-              </h3>
-              <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
-                Find available produce and haulage opportunities with live transparent pricing and
-                location coordinates.
-              </p>
-            </LiquidCard>
+            <motion.div variants={fadeInUp}>
+              <LiquidCard
+                variant="primary"
+                className="h-full p-5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-lift)] cursor-pointer"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-display text-2xl font-extrabold text-primary/50">01</span>
+                  <span className="grid size-9 place-items-center rounded-xl bg-primary/10 text-primary">
+                    <Search className="size-4" />
+                  </span>
+                </div>
+                <h3 className="mt-3 font-display text-lg font-bold text-foreground uppercase tracking-wide">
+                  DISCOVER
+                </h3>
+                <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
+                  Find available produce and haulage opportunities with live transparent pricing and
+                  location coordinates.
+                </p>
+              </LiquidCard>
+            </motion.div>
 
             {/* Step 2 */}
-            <LiquidCard
-              variant="emerald"
-              className="p-5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-lift)] cursor-pointer"
-            >
-              <div className="flex items-center justify-between">
-                <span className="font-display text-2xl font-extrabold text-emerald-600/60">02</span>
-                <span className="grid size-9 place-items-center rounded-xl bg-emerald-500/15 text-emerald-600">
-                  <ShieldCheck className="size-4" />
-                </span>
-              </div>
-              <h3 className="mt-3 font-display text-lg font-bold text-foreground uppercase tracking-wide">
-                VERIFY
-              </h3>
-              <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
-                Understand who you are transacting with through verified identity, fulfilment
-                history, and peer ratings.
-              </p>
-            </LiquidCard>
+            <motion.div variants={fadeInUp}>
+              <LiquidCard
+                variant="emerald"
+                className="h-full p-5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-lift)] cursor-pointer"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-display text-2xl font-extrabold text-emerald-600/60">
+                    02
+                  </span>
+                  <span className="grid size-9 place-items-center rounded-xl bg-emerald-500/15 text-emerald-600">
+                    <ShieldCheck className="size-4" />
+                  </span>
+                </div>
+                <h3 className="mt-3 font-display text-lg font-bold text-foreground uppercase tracking-wide">
+                  VERIFY
+                </h3>
+                <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
+                  Understand who you are transacting with through verified identity, fulfilment
+                  history, and peer ratings.
+                </p>
+              </LiquidCard>
+            </motion.div>
 
             {/* Step 3 */}
-            <LiquidCard
-              variant="accent"
-              className="p-5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-lift)] cursor-pointer"
-            >
-              <div className="flex items-center justify-between">
-                <span className="font-display text-2xl font-extrabold text-accent/70">03</span>
-                <span className="grid size-9 place-items-center rounded-xl bg-accent/20 text-accent-foreground">
-                  <Layers className="size-4" />
-                </span>
-              </div>
-              <h3 className="mt-3 font-display text-lg font-bold text-foreground uppercase tracking-wide">
-                MATCH
-              </h3>
-              <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
-                Connect the right farmer, buyer and transporter into one direct, binding trade
-                contract.
-              </p>
-            </LiquidCard>
+            <motion.div variants={fadeInUp}>
+              <LiquidCard
+                variant="accent"
+                className="h-full p-5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-lift)] cursor-pointer"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-display text-2xl font-extrabold text-accent/70">03</span>
+                  <span className="grid size-9 place-items-center rounded-xl bg-accent/20 text-accent-foreground">
+                    <Layers className="size-4" />
+                  </span>
+                </div>
+                <h3 className="mt-3 font-display text-lg font-bold text-foreground uppercase tracking-wide">
+                  MATCH
+                </h3>
+                <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
+                  Connect the right farmer, buyer and transporter into one direct, binding trade
+                  contract.
+                </p>
+              </LiquidCard>
+            </motion.div>
 
             {/* Step 4 */}
-            <LiquidCard
-              variant="gold"
-              className="p-5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-lift)] cursor-pointer"
-            >
-              <div className="flex items-center justify-between">
-                <span className="font-display text-2xl font-extrabold text-gold/70">04</span>
-                <span className="grid size-9 place-items-center rounded-xl bg-gold/25 text-gold-foreground">
-                  <Truck className="size-4" />
-                </span>
-              </div>
-              <h3 className="mt-3 font-display text-lg font-bold text-foreground uppercase tracking-wide">
-                MOVE
-              </h3>
-              <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
-                Coordinate the farm gate pickup, load inspection, and route dispatch along major
-                interstate corridors.
-              </p>
-            </LiquidCard>
+            <motion.div variants={fadeInUp}>
+              <LiquidCard
+                variant="gold"
+                className="h-full p-5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-lift)] cursor-pointer"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-display text-2xl font-extrabold text-gold/70">04</span>
+                  <span className="grid size-9 place-items-center rounded-xl bg-gold/25 text-gold-foreground">
+                    <Truck className="size-4" />
+                  </span>
+                </div>
+                <h3 className="mt-3 font-display text-lg font-bold text-foreground uppercase tracking-wide">
+                  MOVE
+                </h3>
+                <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
+                  Coordinate the farm gate pickup, load inspection, and route dispatch along major
+                  interstate corridors.
+                </p>
+              </LiquidCard>
+            </motion.div>
 
             {/* Step 5 */}
-            <LiquidCard
-              variant="blue"
-              className="p-5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-lift)] cursor-pointer"
-            >
-              <div className="flex items-center justify-between">
-                <span className="font-display text-2xl font-extrabold text-blue-500/50">05</span>
-                <span className="grid size-9 place-items-center rounded-xl bg-blue-500/15 text-blue-600">
-                  <Compass className="size-4" />
-                </span>
-              </div>
-              <h3 className="mt-3 font-display text-lg font-bold text-foreground uppercase tracking-wide">
-                DELIVER
-              </h3>
-              <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
-                Track the shipment milestone by milestone and confirm quality handover at the
-                destination market.
-              </p>
-            </LiquidCard>
+            <motion.div variants={fadeInUp}>
+              <LiquidCard
+                variant="blue"
+                className="h-full p-5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-lift)] cursor-pointer"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-display text-2xl font-extrabold text-blue-500/50">05</span>
+                  <span className="grid size-9 place-items-center rounded-xl bg-blue-500/15 text-blue-600">
+                    <Compass className="size-4" />
+                  </span>
+                </div>
+                <h3 className="mt-3 font-display text-lg font-bold text-foreground uppercase tracking-wide">
+                  DELIVER
+                </h3>
+                <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
+                  Track the shipment milestone by milestone and confirm quality handover at the
+                  destination market.
+                </p>
+              </LiquidCard>
+            </motion.div>
 
             {/* Step 6 */}
-            <LiquidCard
-              variant="success"
-              className="p-5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-lift)] border-success/40 bg-success/5 cursor-pointer"
-            >
-              <div className="flex items-center justify-between">
-                <span className="font-display text-2xl font-extrabold text-success">06</span>
-                <span className="grid size-9 place-items-center rounded-xl bg-success text-success-foreground">
-                  <Check className="size-4" />
-                </span>
-              </div>
-              <h3 className="mt-3 font-display text-lg font-bold text-foreground uppercase tracking-wide">
-                BUILD TRUST
-              </h3>
-              <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
-                Mutual feedback and successful contract completion automatically strengthen each
-                participant's reputation.
-              </p>
-            </LiquidCard>
-          </div>
+            <motion.div variants={fadeInUp}>
+              <LiquidCard
+                variant="success"
+                className="h-full p-5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-lift)] border-success/40 bg-success/5 cursor-pointer"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-display text-2xl font-extrabold text-success">06</span>
+                  <span className="grid size-9 place-items-center rounded-xl bg-success text-success-foreground">
+                    <Check className="size-4" />
+                  </span>
+                </div>
+                <h3 className="mt-3 font-display text-lg font-bold text-foreground uppercase tracking-wide">
+                  BUILD TRUST
+                </h3>
+                <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
+                  Mutual feedback and successful contract completion automatically strengthen each
+                  participant's reputation.
+                </p>
+              </LiquidCard>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
       {/* ========================================================================= */}
       {/* SECTION 4 — TRUST (CORE DIFFERENTIATOR)                                  */}
       {/* ========================================================================= */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6">
+      <motion.section
+        initial={{ opacity: 0, y: 25 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-60px" }}
+        transition={{ duration: 0.6 }}
+        className="mx-auto max-w-7xl px-4 sm:px-6"
+      >
         <div className="grid items-start gap-12 lg:grid-cols-[1.1fr_1fr]">
           <div className="space-y-6">
             <Badge variant="outline" className="font-bold text-primary">
@@ -441,7 +508,7 @@ export function LandingPage() {
               {/* Farmer Tab */}
               <div
                 onClick={() => setSelectedTrustRole("farmer")}
-                className={`flex cursor-pointer items-center justify-between rounded-xl border p-4 transition-all ${
+                className={`flex cursor-pointer items-center justify-between rounded-xl border p-4 transition-all duration-200 hover:scale-[1.01] ${
                   selectedTrustRole === "farmer"
                     ? "border-success bg-success/10 ring-2 ring-success/25"
                     : "border-border bg-card hover:bg-muted/50"
@@ -469,7 +536,7 @@ export function LandingPage() {
               {/* Buyer Tab */}
               <div
                 onClick={() => setSelectedTrustRole("buyer")}
-                className={`flex cursor-pointer items-center justify-between rounded-xl border p-4 transition-all ${
+                className={`flex cursor-pointer items-center justify-between rounded-xl border p-4 transition-all duration-200 hover:scale-[1.01] ${
                   selectedTrustRole === "buyer"
                     ? "border-primary bg-primary/10 ring-2 ring-primary/25"
                     : "border-border bg-card hover:bg-muted/50"
@@ -499,7 +566,7 @@ export function LandingPage() {
               {/* Transporter Tab */}
               <div
                 onClick={() => setSelectedTrustRole("transporter")}
-                className={`flex cursor-pointer items-center justify-between rounded-xl border p-4 transition-all ${
+                className={`flex cursor-pointer items-center justify-between rounded-xl border p-4 transition-all duration-200 hover:scale-[1.01] ${
                   selectedTrustRole === "transporter"
                     ? "border-gold bg-gold/15 ring-2 ring-gold/30"
                     : "border-border bg-card hover:bg-muted/50"
@@ -551,12 +618,18 @@ export function LandingPage() {
             </Card>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* ========================================================================= */}
       {/* SECTION 5 — LOGISTICS LAYER WITH REAL MAP & MOVING VEHICLES (UBER STYLE) */}
       {/* ========================================================================= */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6">
+      <motion.section
+        initial={{ opacity: 0, y: 25 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-60px" }}
+        transition={{ duration: 0.6 }}
+        className="mx-auto max-w-7xl px-4 sm:px-6"
+      >
         <div className="text-center max-w-3xl mx-auto">
           <Badge variant="secondary" className="mb-2 font-bold uppercase tracking-wider">
             Live Moving Logistics Layer
@@ -593,12 +666,18 @@ export function LandingPage() {
         <div className="mt-10">
           <AgroMap />
         </div>
-      </section>
+      </motion.section>
 
       {/* ========================================================================= */}
       {/* SECTION 6 — EMBEDDED AI DECISION LAYER                                   */}
       {/* ========================================================================= */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6">
+      <motion.section
+        initial={{ opacity: 0, y: 25 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-60px" }}
+        transition={{ duration: 0.6 }}
+        className="mx-auto max-w-7xl px-4 sm:px-6"
+      >
         <Card className="relative overflow-hidden border-primary/30 bg-gradient-to-br from-primary/10 via-card to-background p-6 shadow-[var(--shadow-lift)] sm:p-10">
           <div className="grid items-center gap-8 lg:grid-cols-[1.1fr_1fr]">
             <div className="space-y-4">
@@ -656,13 +735,19 @@ export function LandingPage() {
             </div>
           </div>
         </Card>
-      </section>
+      </motion.section>
 
       {/* ========================================================================= */}
       {/* SECTION 7 — MEASURABLE IMPACT (WITH LIQUID CARDS)                         */}
       {/* ========================================================================= */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="text-center max-w-2xl mx-auto">
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-60px" }}
+        variants={staggerContainer}
+        className="mx-auto max-w-7xl px-4 sm:px-6"
+      >
+        <motion.div variants={fadeInUp} className="text-center max-w-2xl mx-auto">
           <Badge variant="outline" className="mb-2 font-bold uppercase tracking-wider text-primary">
             Long-Term Value
           </Badge>
@@ -672,74 +757,90 @@ export function LandingPage() {
           <p className="mt-2 text-sm text-muted-foreground sm:text-base">
             Engineered to transform agricultural movement across Africa. Tap any pillar below.
           </p>
-        </div>
+        </motion.div>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          <LiquidCard
-            variant="success"
-            className="p-5 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] cursor-pointer"
-          >
-            <span className="grid size-10 place-items-center rounded-xl bg-success/15 text-success">
-              <Sprout className="size-5" />
-            </span>
-            <h3 className="mt-3 font-display text-base font-bold text-foreground">Market Access</h3>
-            <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-              Designed to improve direct buyer reach for regional producers without middleman
-              deductions.
-            </p>
-          </LiquidCard>
+          <motion.div variants={fadeInUp}>
+            <LiquidCard
+              variant="success"
+              className="h-full p-5 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] cursor-pointer"
+            >
+              <span className="grid size-10 place-items-center rounded-xl bg-success/15 text-success">
+                <Sprout className="size-5" />
+              </span>
+              <h3 className="mt-3 font-display text-base font-bold text-foreground">
+                Market Access
+              </h3>
+              <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                Designed to improve direct buyer reach for regional producers without middleman
+                deductions.
+              </p>
+            </LiquidCard>
+          </motion.div>
 
-          <LiquidCard
-            variant="primary"
-            className="p-5 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] cursor-pointer"
-          >
-            <span className="grid size-10 place-items-center rounded-xl bg-primary/15 text-primary">
-              <ShieldCheck className="size-5" />
-            </span>
-            <h3 className="mt-3 font-display text-base font-bold text-foreground">Trust</h3>
-            <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-              Designed to increase contract reliability through verified identities and 3-way
-              performance scores.
-            </p>
-          </LiquidCard>
+          <motion.div variants={fadeInUp}>
+            <LiquidCard
+              variant="primary"
+              className="h-full p-5 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] cursor-pointer"
+            >
+              <span className="grid size-10 place-items-center rounded-xl bg-primary/15 text-primary">
+                <ShieldCheck className="size-5" />
+              </span>
+              <h3 className="mt-3 font-display text-base font-bold text-foreground">Trust</h3>
+              <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                Designed to increase contract reliability through verified identities and 3-way
+                performance scores.
+              </p>
+            </LiquidCard>
+          </motion.div>
 
-          <LiquidCard
-            variant="gold"
-            className="p-5 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] cursor-pointer"
-          >
-            <span className="grid size-10 place-items-center rounded-xl bg-gold/25 text-gold-foreground">
-              <Truck className="size-5" />
-            </span>
-            <h3 className="mt-3 font-display text-base font-bold text-foreground">
-              Transport Efficiency
-            </h3>
-            <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-              Designed to reduce empty return hauls and match loads with active interstate corridor
-              carriers.
-            </p>
-          </LiquidCard>
+          <motion.div variants={fadeInUp}>
+            <LiquidCard
+              variant="gold"
+              className="h-full p-5 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] cursor-pointer"
+            >
+              <span className="grid size-10 place-items-center rounded-xl bg-gold/25 text-gold-foreground">
+                <Truck className="size-5" />
+              </span>
+              <h3 className="mt-3 font-display text-base font-bold text-foreground">
+                Transport Efficiency
+              </h3>
+              <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                Designed to reduce empty return hauls and match loads with active interstate
+                corridor carriers.
+              </p>
+            </LiquidCard>
+          </motion.div>
 
-          <LiquidCard
-            variant="accent"
-            className="p-5 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] cursor-pointer"
-          >
-            <span className="grid size-10 place-items-center rounded-xl bg-accent/20 text-accent-foreground">
-              <Zap className="size-5" />
-            </span>
-            <h3 className="mt-3 font-display text-base font-bold text-foreground">
-              Produce Movement
-            </h3>
-            <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-              Designed to reduce farm-to-table transit time and minimize post-harvest spoilage.
-            </p>
-          </LiquidCard>
+          <motion.div variants={fadeInUp}>
+            <LiquidCard
+              variant="accent"
+              className="h-full p-5 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] cursor-pointer"
+            >
+              <span className="grid size-10 place-items-center rounded-xl bg-accent/20 text-accent-foreground">
+                <Zap className="size-5" />
+              </span>
+              <h3 className="mt-3 font-display text-base font-bold text-foreground">
+                Produce Movement
+              </h3>
+              <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                Designed to reduce farm-to-table transit time and minimize post-harvest spoilage.
+              </p>
+            </LiquidCard>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* ========================================================================= */}
       {/* SECTION 8 — FINAL CALL TO ACTION                                          */}
       {/* ========================================================================= */}
-      <section className="border-t border-border/70 bg-primary text-primary-foreground py-16 sm:py-24">
+      <motion.section
+        initial={{ opacity: 0, scale: 0.96 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true, margin: "-60px" }}
+        transition={{ duration: 0.6 }}
+        className="border-t border-border/70 bg-primary text-primary-foreground py-16 sm:py-24"
+      >
         <div className="mx-auto max-w-5xl px-4 text-center sm:px-6">
           <h2 className="font-display text-4xl font-extrabold tracking-tight sm:text-5xl">
             Move food. Build trust. Reduce waste.
@@ -752,7 +853,7 @@ export function LandingPage() {
               asChild
               size="lg"
               variant="secondary"
-              className="rounded-xl px-8 font-bold text-primary shadow-[var(--shadow-lift)]"
+              className="rounded-xl px-8 font-bold text-primary shadow-[var(--shadow-lift)] transition-transform hover:scale-105"
             >
               <Link to="/marketplace">
                 Explore Agrolink
@@ -762,13 +863,13 @@ export function LandingPage() {
             <Button
               asChild
               size="lg"
-              className="rounded-xl border border-primary-foreground/30 bg-primary-foreground/10 text-primary-foreground hover:bg-primary-foreground/20 font-semibold"
+              className="rounded-xl border border-primary-foreground/30 bg-primary-foreground/10 text-primary-foreground hover:bg-primary-foreground/20 font-semibold transition-transform hover:scale-105"
             >
               <Link to="/auth">Choose Demo Role</Link>
             </Button>
           </div>
         </div>
-      </section>
+      </motion.section>
     </div>
   );
 }

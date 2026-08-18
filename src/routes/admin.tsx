@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { motion } from "framer-motion";
+import { fadeInUp, staggerContainer } from "@/lib/animations";
 import {
   ShieldAlert,
   ShieldCheck,
@@ -92,40 +94,53 @@ function AdminDashboard() {
       />
 
       {/* KPI Cards */}
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <DashboardCard
-          label="Marketplace Volume (GMV)"
-          value={formatNaira(gmv)}
-          hint={`${completedOrders.length} fulfilled contracts`}
-          icon={TrendingUp}
-        />
-        <DashboardCard
-          label="Average Trust Rating"
-          value={`${avgTrust}/100`}
-          hint="Calculated across 8 participants"
-          icon={ShieldCheck}
-        />
-        <DashboardCard
-          label="Active In-Transit Logistics"
-          value={activeDeliveries.length}
-          hint={`${activeOrders.length} active orders pending`}
-          icon={Truck}
-        />
-        <Card className="flex flex-col justify-between gap-0 p-5 shadow-[var(--shadow-card)]">
-          <div className="flex items-start justify-between">
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Risk & Flagged Accounts
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={staggerContainer}
+        className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+      >
+        <motion.div variants={fadeInUp}>
+          <DashboardCard
+            label="Marketplace Volume (GMV)"
+            value={formatNaira(gmv)}
+            hint={`${completedOrders.length} fulfilled contracts`}
+            icon={TrendingUp}
+          />
+        </motion.div>
+        <motion.div variants={fadeInUp}>
+          <DashboardCard
+            label="Average Trust Rating"
+            value={`${avgTrust}/100`}
+            hint="Calculated across 8 participants"
+            icon={ShieldCheck}
+          />
+        </motion.div>
+        <motion.div variants={fadeInUp}>
+          <DashboardCard
+            label="Active In-Transit Logistics"
+            value={activeDeliveries.length}
+            hint={`${activeOrders.length} active orders pending`}
+            icon={Truck}
+          />
+        </motion.div>
+        <motion.div variants={fadeInUp}>
+          <Card className="flex flex-col justify-between gap-0 p-5 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)]">
+            <div className="flex items-start justify-between">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Risk & Flagged Accounts
+              </p>
+              <ShieldAlert className="size-4 text-warning" />
+            </div>
+            <p className="mt-2 font-display text-2xl font-bold sm:text-3xl text-warning">
+              {flaggedUsers.length} Flagged
             </p>
-            <ShieldAlert className="size-4 text-warning" />
-          </div>
-          <p className="mt-2 font-display text-2xl font-bold sm:text-3xl text-warning">
-            {flaggedUsers.length} Flagged
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {flaggedUsers.map((u) => u.name).join(", ") || "No flagged activity"}
-          </p>
-        </Card>
-      </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {flaggedUsers.map((u) => u.name).join(", ") || "No flagged activity"}
+            </p>
+          </Card>
+        </motion.div>
+      </motion.div>
 
       {/* National Corridors Map */}
       <div className="mt-8">

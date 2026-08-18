@@ -33,7 +33,7 @@ export interface HubLocation {
   activeUsers: string[];
 }
 
-export const AGRO_HUBS: HubLocation[] = [
+const AGRO_HUBS: HubLocation[] = [
   {
     id: "kano",
     name: "Kano Agricultural Belt",

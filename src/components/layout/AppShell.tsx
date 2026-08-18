@@ -1,5 +1,6 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { Link, useRouter } from "@tanstack/react-router";
+import { motion } from "framer-motion";
 import { Bell, Leaf, Menu, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -227,7 +228,14 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main className="flex-1">{children}</main>
+      <motion.main
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+        className="flex-1"
+      >
+        {children}
+      </motion.main>
 
       <footer className="border-t border-border/70 bg-card/40">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-2 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6">
@@ -252,20 +260,30 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"
+    >
       <div>
         <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">{title}</h1>
         {subtitle && <p className="mt-1.5 max-w-2xl text-muted-foreground">{subtitle}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
-    </div>
+    </motion.div>
   );
 }
 
 export function Page({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <div className={cn("mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10", className)}>
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      className={cn("mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10", className)}
+    >
       {children}
-    </div>
+    </motion.div>
   );
 }

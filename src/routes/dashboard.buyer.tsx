@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { motion } from "framer-motion";
+import { fadeInUp, staggerContainer } from "@/lib/animations";
 import {
   ShoppingBasket,
   Truck,
@@ -89,38 +91,53 @@ function BuyerDashboard() {
       />
 
       {/* KPI Cards Grid */}
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={staggerContainer}
+        className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+      >
         {trust && (
-          <Card className="flex items-center justify-between gap-0 p-5 shadow-[var(--shadow-card)]">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Trust Score
-              </p>
-              <p className="mt-1 font-display text-3xl font-bold text-success">{trust.score}/100</p>
-              <p className="text-xs text-muted-foreground">{trust.level} · Verified Buyer</p>
-            </div>
-            <TrustScore trust={trust} size="sm" showLabel={false} />
-          </Card>
+          <motion.div variants={fadeInUp}>
+            <Card className="flex items-center justify-between gap-0 p-5 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)]">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Trust Score
+                </p>
+                <p className="mt-1 font-display text-3xl font-bold text-success">
+                  {trust.score}/100
+                </p>
+                <p className="text-xs text-muted-foreground">{trust.level} · Verified Buyer</p>
+              </div>
+              <TrustScore trust={trust} size="sm" showLabel={false} />
+            </Card>
+          </motion.div>
         )}
-        <DashboardCard
-          label="Active Orders"
-          value={activeOrders.length}
-          hint={`${activeOrders.reduce((sum, o) => sum + o.quantityKg, 0).toLocaleString()}kg in transit/pending`}
-          icon={Clock}
-        />
-        <DashboardCard
-          label="Completed Orders"
-          value={completedOrders.length}
-          hint={`${completedOrders.reduce((sum, o) => sum + o.quantityKg, 0).toLocaleString()}kg delivered`}
-          icon={CheckCircle2}
-        />
-        <DashboardCard
-          label="Total Purchases"
-          value={formatNaira(totalSpent)}
-          hint="Direct farm gate value"
-          icon={Package}
-        />
-      </div>
+        <motion.div variants={fadeInUp}>
+          <DashboardCard
+            label="Active Orders"
+            value={activeOrders.length}
+            hint={`${activeOrders.reduce((sum, o) => sum + o.quantityKg, 0).toLocaleString()}kg in transit/pending`}
+            icon={Clock}
+          />
+        </motion.div>
+        <motion.div variants={fadeInUp}>
+          <DashboardCard
+            label="Completed Orders"
+            value={completedOrders.length}
+            hint={`${completedOrders.reduce((sum, o) => sum + o.quantityKg, 0).toLocaleString()}kg delivered`}
+            icon={CheckCircle2}
+          />
+        </motion.div>
+        <motion.div variants={fadeInUp}>
+          <DashboardCard
+            label="Total Purchases"
+            value={formatNaira(totalSpent)}
+            hint="Direct farm gate value"
+            icon={Package}
+          />
+        </motion.div>
+      </motion.div>
 
       {/* Active Orders Tracker */}
       <div className="mt-8 space-y-8">

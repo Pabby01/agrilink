@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import type { TrustProfile } from "@/lib/types";
 
-export const trustTone = (score: number) =>
+const trustTone = (score: number) =>
   score >= 90
     ? {
         text: "text-success",
