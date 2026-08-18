@@ -138,7 +138,7 @@ function LandingPage() {
               initial="hidden"
               animate="visible"
               variants={staggerContainer}
-              className="space-y-6"
+              className="space-y-6 rounded-3xl bg-background/60 p-6 sm:p-8 backdrop-blur-xs border border-border/40 shadow-xs"
             >
               {/* Eyebrow */}
               <motion.div variants={fadeInUp}>

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Pause, Play, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, Pause, Play, Sparkles, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface CarouselSlide {
@@ -86,13 +86,21 @@ export const HERO_AGRICULTURAL_SLIDES: CarouselSlide[] = [
 
 export function HeroBackgroundCarousel({
   className,
-  autoPlayInterval = 5500,
+  autoPlayInterval = 5000,
 }: {
   className?: string;
   autoPlayInterval?: number;
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
+
+  // Preload images for instant rendering
+  useEffect(() => {
+    HERO_AGRICULTURAL_SLIDES.forEach((slide) => {
+      const img = new Image();
+      img.src = slide.url;
+    });
+  }, []);
 
   const nextSlide = useCallback(() => {
     setCurrentIndex((prev) => (prev + 1) % HERO_AGRICULTURAL_SLIDES.length);
@@ -120,72 +128,68 @@ export function HeroBackgroundCarousel({
   const currentSlide = HERO_AGRICULTURAL_SLIDES[currentIndex];
 
   return (
-    <div
-      className={cn(
-        "pointer-events-none absolute inset-0 -z-10 overflow-hidden select-none",
-        className,
-      )}
-    >
-      {/* Background Image Cross-Fade & Smooth Ken Burns Zoom */}
-      <AnimatePresence initial={false} mode="sync">
+    <div className={cn("absolute inset-0 -z-10 overflow-hidden select-none", className)}>
+      {/* Background Image Cross-Fade with Ken Burns Zoom */}
+      <AnimatePresence mode="popLayout">
         {currentSlide && (
           <motion.div
             key={currentSlide.id}
-            initial={{ opacity: 0, scale: 1.06 }}
+            initial={{ opacity: 0, scale: 1.08 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
+            exit={{ opacity: 0, scale: 0.98 }}
             transition={{
-              opacity: { duration: 1.6, ease: "easeInOut" },
-              scale: { duration: 7, ease: "easeOut" },
+              opacity: { duration: 1.2, ease: "easeInOut" },
+              scale: { duration: 6, ease: "easeOut" },
             }}
-            className="absolute inset-0 h-full w-full bg-cover bg-center bg-no-repeat"
-            style={{
-              backgroundImage: `url(${currentSlide.url})`,
-            }}
-          />
+            className="absolute inset-0 h-full w-full"
+          >
+            <img
+              src={currentSlide.url}
+              alt={currentSlide.title}
+              className="h-full w-full object-cover object-center"
+              loading="eager"
+            />
+          </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Multi-layered Glassmorphism & High-Contrast Readability Gradient Mask */}
-      <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/88 to-background/75 dark:from-background/96 dark:via-background/90 dark:to-background/80" />
-      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-      <div className="absolute inset-0 bg-radial-[circle_at_top_left] from-primary/15 via-transparent to-transparent" />
+      {/* Elegant, Semi-Transparent Gradient Layer (Balanced for High Visibility & Readability) */}
+      <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/60 to-background/30 dark:from-background/92 dark:via-background/70 dark:to-background/40" />
+      <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/20" />
+      <div className="absolute inset-0 bg-emerald-950/15 mix-blend-multiply pointer-events-none" />
 
-      {/* Subtle Pattern Grid Overlay */}
-      <div
-        className="absolute inset-0 bg-[radial-gradient(#16a34a_1px,transparent_1px)] [background-size:24px_24px] opacity-15 mix-blend-overlay"
-        aria-hidden="true"
-      />
-
-      {/* Interactive Carousel Bar (Pointer Events Enabled for Controls) */}
-      <div className="pointer-events-auto absolute bottom-4 left-4 right-4 z-20 flex flex-wrap items-center justify-between gap-3 sm:bottom-6 sm:left-8 sm:right-8">
+      {/* Bottom Interactive Navigation Bar */}
+      <div className="absolute bottom-4 left-4 right-4 z-30 flex flex-wrap items-center justify-between gap-3 sm:bottom-6 sm:left-8 sm:right-8 pointer-events-auto">
         {/* Active Scene Badge */}
         <motion.div
           key={currentSlide?.id}
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="hidden sm:flex items-center gap-2 rounded-full border border-white/20 bg-card/85 px-3 py-1.5 text-xs shadow-md backdrop-blur-md"
+          transition={{ duration: 0.3 }}
+          className="flex items-center gap-2 rounded-full border border-white/30 bg-background/85 px-3.5 py-1.5 text-xs shadow-lg backdrop-blur-md"
         >
-          <Sparkles className="size-3.5 text-gold" />
-          <span className="font-semibold text-foreground">{currentSlide?.title}</span>
+          <Sparkles className="size-3.5 text-gold animate-pulse" />
+          <span className="font-bold text-foreground">{currentSlide?.title}</span>
           <span className="text-muted-foreground">·</span>
-          <span className="text-xs text-muted-foreground">{currentSlide?.location}</span>
+          <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+            <MapPin className="size-3 text-primary" />
+            {currentSlide?.location}
+          </span>
         </motion.div>
 
-        {/* Slide Controls & Indicator Pills */}
-        <div className="flex items-center gap-2 rounded-full border border-white/20 bg-card/80 p-1.5 shadow-md backdrop-blur-md">
+        {/* Carousel Controls */}
+        <div className="flex items-center gap-2 rounded-full border border-white/30 bg-background/85 px-3 py-1.5 shadow-lg backdrop-blur-md">
           {/* Previous Button */}
           <button
             type="button"
             onClick={prevSlide}
-            aria-label="Previous slide"
+            aria-label="Previous image"
             className="flex size-7 items-center justify-center rounded-full text-foreground/80 hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
           >
             <ChevronLeft className="size-4" />
           </button>
 
-          {/* Indicators Dots */}
+          {/* Indicator Pills */}
           <div className="flex items-center gap-1.5 px-1">
             {HERO_AGRICULTURAL_SLIDES.map((slide, idx) => {
               const isActive = idx === currentIndex;
@@ -194,12 +198,12 @@ export function HeroBackgroundCarousel({
                   key={slide.id}
                   type="button"
                   onClick={() => goToSlide(idx)}
-                  aria-label={`Go to slide ${idx + 1}: ${slide.title}`}
+                  aria-label={`Slide ${idx + 1}: ${slide.title}`}
                   className={cn(
                     "h-2 rounded-full transition-all duration-300 cursor-pointer",
                     isActive
                       ? "w-6 bg-primary"
-                      : "w-2 bg-muted-foreground/40 hover:bg-foreground/60",
+                      : "w-2 bg-muted-foreground/40 hover:bg-foreground/70",
                   )}
                 />
               );
@@ -210,13 +214,13 @@ export function HeroBackgroundCarousel({
           <button
             type="button"
             onClick={nextSlide}
-            aria-label="Next slide"
+            aria-label="Next image"
             className="flex size-7 items-center justify-center rounded-full text-foreground/80 hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
           >
             <ChevronRight className="size-4" />
           </button>
 
-          {/* Pause / Resume Button */}
+          {/* Play/Pause Button */}
           <button
             type="button"
             onClick={() => setIsPlaying(!isPlaying)}
