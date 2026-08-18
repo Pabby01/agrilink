@@ -128,7 +128,7 @@ export function HeroBackgroundCarousel({
   const currentSlide = HERO_AGRICULTURAL_SLIDES[currentIndex];
 
   return (
-    <div className={cn("absolute inset-0 -z-10 overflow-hidden select-none", className)}>
+    <div className={cn("absolute inset-0 z-0 overflow-hidden select-none", className)}>
       {/* Background Image Cross-Fade with Ken Burns Zoom */}
       <AnimatePresence mode="popLayout">
         {currentSlide && (
@@ -154,9 +154,9 @@ export function HeroBackgroundCarousel({
       </AnimatePresence>
 
       {/* Elegant, Semi-Transparent Gradient Layer (Balanced for High Visibility & Readability) */}
-      <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/60 to-background/30 dark:from-background/92 dark:via-background/70 dark:to-background/40" />
-      <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/20" />
-      <div className="absolute inset-0 bg-emerald-950/15 mix-blend-multiply pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-background/45 to-background/15 dark:from-background/85 dark:via-background/55 dark:to-background/25" />
+      <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-background/20" />
+      <div className="absolute inset-0 bg-emerald-950/10 mix-blend-multiply pointer-events-none" />
 
       {/* Bottom Interactive Navigation Bar */}
       <div className="absolute bottom-4 left-4 right-4 z-30 flex flex-wrap items-center justify-between gap-3 sm:bottom-6 sm:left-8 sm:right-8 pointer-events-auto">

@@ -128,11 +128,11 @@ function LandingPage() {
       {/* ========================================================================= */}
       {/* SECTION 1 — HERO                                                          */}
       {/* ========================================================================= */}
-      <section className="relative overflow-hidden border-b border-border/70 py-16 sm:py-24">
+      <section className="relative isolate overflow-hidden border-b border-border/70 py-16 sm:py-24">
         {/* Full-width Responsive Agricultural Carousel Background */}
         <HeroBackgroundCarousel />
 
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6">
           <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_1fr]">
             <motion.div
               initial="hidden"
