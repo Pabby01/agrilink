@@ -287,4 +287,19 @@ export const api = {
       }>("/api/admin/metrics");
     },
   },
+
+  ai: {
+    async query(data: { prompt: string; role?: Role | undefined; userId?: string | undefined }) {
+      return apiFetch<{
+        answer: string;
+        suggestion: string;
+        keyMetrics?: { label: string; value: string }[] | undefined;
+        action?: { label: string; to: string } | undefined;
+        sources?: string[] | undefined;
+      }>("/api/ai/query", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+    },
+  },
 };

@@ -8,6 +8,7 @@ import { PaymentsController } from "./payments";
 import { KYBController } from "./kyb";
 import { MarketplaceController } from "./marketplace";
 import { LogisticsController } from "./logistics";
+import { AIIntelligenceController } from "./ai";
 import { db } from "./db";
 
 function json(data: unknown, status = 200): Response {
@@ -249,6 +250,20 @@ export async function handleApiRequest(req: Request): Promise<Response | null> {
           auditLogs: db.auditLogs.slice(0, 50),
         },
       });
+    }
+
+    // ---------------------------------------------------------------------------
+    // 7. REAL-DATA GROUNDED AI INTELLIGENCE ROUTE
+    // ---------------------------------------------------------------------------
+    if (path === "/api/ai/query" && method === "POST") {
+      const body = await req.json();
+      const user = getAuthUser(req);
+      const res = await AIIntelligenceController.processQuery({
+        prompt: body.prompt,
+        role: body.role || user?.role || "buyer",
+        userId: user?.id,
+      });
+      return json(res, res.success ? 200 : 400);
     }
 
     return json({ success: false, error: "Endpoint not found" }, 404);
