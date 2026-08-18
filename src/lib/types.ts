@@ -78,7 +78,7 @@ export interface Delivery {
   destination: { label: string; lat: number; lng: number };
   distanceKm: number;
   fee: number;
-  urgency: "Standard" | "Urgent";
+  urgency: "Standard" | "Urgent" | "Cold Chain Refrigerated";
   status: DeliveryStatus;
   createdAt: string;
 }

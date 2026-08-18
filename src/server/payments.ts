@@ -48,7 +48,8 @@ export class PaymentsController {
       data.urgency === "Cold Chain Refrigerated" ? 35_000 : data.urgency === "Urgent" ? 25_000 : 0;
 
     const deliveryFee = Math.round(qty * baseHaulageRatePerKg + urgencySurcharge);
-    const totalEscrowAmount = produceSubtotal + deliveryFee;
+    const platformFee = Math.max(200, Math.round(produceSubtotal * 0.01));
+    const totalEscrowAmount = produceSubtotal + deliveryFee + platformFee;
 
     const orderId = `ord-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
     const orderNumber = `AGRO-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -66,6 +67,7 @@ export class PaymentsController {
       unit_price_per_kg: produce.price_per_kg,
       produce_subtotal: produceSubtotal,
       delivery_fee: deliveryFee,
+      platform_fee: platformFee,
       total_escrow_amount: totalEscrowAmount,
       escrow_status: "funded_in_escrow",
       order_status: "Accepted",

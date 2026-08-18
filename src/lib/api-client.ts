@@ -200,6 +200,29 @@ export const api = {
     },
   },
 
+  pricing: {
+    async calculate(data: {
+      quantityKg: number;
+      pricePerKg: number;
+      distanceKm?: number | undefined;
+      isColdChain?: boolean | undefined;
+      urgency?: "Standard" | "Urgent" | "Cold Chain Refrigerated" | undefined;
+    }) {
+      return apiFetch<{
+        produceSubtotal: number;
+        logisticsFee: number;
+        platformFee: number;
+        totalAmount: number;
+        currency: string;
+        platformFeePercentage: number;
+        isColdChain: boolean;
+      }>("/api/pricing/calculate", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+    },
+  },
+
   orders: {
     async createEscrow(data: {
       produceId: string;
@@ -211,6 +234,13 @@ export const api = {
         delivery: Record<string, unknown>;
         payment: Record<string, unknown>;
       }>("/api/orders/create-escrow", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+    },
+
+    async transition(data: { orderId: string; targetStatus: string; reason?: string | undefined }) {
+      return apiFetch<Order>("/api/orders/transition", {
         method: "POST",
         body: JSON.stringify(data),
       });
@@ -258,6 +288,32 @@ export const api = {
       });
     },
 
+    async pickup(data: {
+      deliveryId: string;
+      quantityCollectedKg: number;
+      evidenceUrl?: string | undefined;
+    }) {
+      return apiFetch<Delivery>("/api/shipments/pickup", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+    },
+
+    async deliver(data: {
+      deliveryId: string;
+      providedOtp: string;
+      quantityReceivedKg: number;
+      evidenceUrl?: string | undefined;
+    }) {
+      return apiFetch<{ delivery: Delivery; hasDiscrepancy: boolean; discrepancyKg: number }>(
+        "/api/shipments/deliver",
+        {
+          method: "POST",
+          body: JSON.stringify(data),
+        },
+      );
+    },
+
     async listVehicles() {
       return apiFetch<Array<Record<string, unknown>>>("/api/vehicles");
     },
@@ -275,6 +331,31 @@ export const api = {
     },
   },
 
+  disputes: {
+    async list() {
+      return apiFetch<Array<Record<string, unknown>>>("/api/disputes");
+    },
+
+    async create(data: {
+      orderId: string;
+      reason: string;
+      description: string;
+      evidenceUrls?: string[] | undefined;
+    }) {
+      return apiFetch<Record<string, unknown>>("/api/disputes/create", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+    },
+
+    async resolve(data: { disputeId: string; resolution: string; notes: string }) {
+      return apiFetch<Record<string, unknown>>("/api/disputes/resolve", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+    },
+  },
+
   admin: {
     async getMetrics() {
       return apiFetch<{
@@ -283,6 +364,8 @@ export const api = {
         activeOrders: number;
         activeDeliveries: number;
         flaggedAccounts: number;
+        openDisputes: number;
+        riskSignals: Array<Record<string, unknown>>;
         auditLogs: Array<Record<string, unknown>>;
       }>("/api/admin/metrics");
     },

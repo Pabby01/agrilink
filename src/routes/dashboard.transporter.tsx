@@ -25,6 +25,9 @@ import { TrustScore } from "@/components/trust/TrustScore";
 import { AIAssistant } from "@/components/ai/AIAssistant";
 import { AgroMap } from "@/components/map/AgroMap";
 import { useApp, formatNaira, timeAgo } from "@/lib/store";
+import { api } from "@/lib/api-client";
+import { ProofOfPickupModal } from "@/components/logistics/ProofOfPickupModal";
+import { ProofOfDeliveryModal } from "@/components/logistics/ProofOfDeliveryModal";
 import type { DeliveryStatus } from "@/lib/types";
 import { toast } from "sonner";
 
@@ -217,54 +220,85 @@ function TransporterDashboard() {
                         </span>
                       </div>
 
-                      {/* Transit Controls Stepper */}
+                      {/* Transit Controls Stepper with Verifiable Proof of Pickup and Delivery */}
                       <div className="rounded-xl border bg-muted/40 p-4 space-y-3">
-                        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                          Update Transit Status
-                        </p>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                            Verifiable Chain-of-Custody Actions
+                          </p>
+                          <span className="text-xs text-muted-foreground font-mono">
+                            OTP Requirement: Active
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2">
                           <Button
                             size="sm"
                             variant={delivery.status === "Accepted" ? "default" : "outline"}
                             onClick={() => {
                               setDeliveryStatus(delivery.id, "Accepted");
-                              toast.info("Status: Accepted (En route to pickup)");
+                              toast.info("Status: Accepted (En route to pickup location)");
                             }}
                           >
                             1. Accepted
                           </Button>
-                          <Button
-                            size="sm"
-                            variant={delivery.status === "Picked Up" ? "default" : "outline"}
-                            onClick={() => {
+
+                          <ProofOfPickupModal
+                            shipmentId={delivery.id}
+                            orderQuantityKg={order?.quantityKg || 1000}
+                            pickupLocation={delivery.pickup.label}
+                            onSuccess={async (data) => {
+                              await api.logistics.pickup({
+                                deliveryId: delivery.id,
+                                quantityCollectedKg: data.quantityCollectedKg,
+                                evidenceUrl: data.evidenceUrl,
+                              });
                               setDeliveryStatus(delivery.id, "Picked Up");
-                              toast.success("Status: Picked Up at Farm Gate");
+                              refreshLiveState();
                             }}
-                          >
-                            2. Picked Up
-                          </Button>
+                            trigger={
+                              <Button
+                                size="sm"
+                                variant={delivery.status === "Picked Up" ? "default" : "outline"}
+                              >
+                                2. Confirm Farm Gate Pickup
+                              </Button>
+                            }
+                          />
+
                           <Button
                             size="sm"
                             variant={delivery.status === "In Transit" ? "default" : "outline"}
                             onClick={() => {
                               setDeliveryStatus(delivery.id, "In Transit");
-                              toast.info("Status: In Transit on Highway");
+                              toast.info("Status: In Transit on Corridor Route");
                             }}
                           >
                             3. In Transit
                           </Button>
-                          <Button
-                            size="sm"
-                            className="bg-success text-success-foreground hover:bg-success/90 font-bold"
-                            onClick={() => {
+
+                          <ProofOfDeliveryModal
+                            shipmentId={delivery.id}
+                            orderQuantityKg={order?.quantityKg || 1000}
+                            expectedOtp="849201"
+                            onSuccess={async (data) => {
+                              await api.logistics.deliver({
+                                deliveryId: delivery.id,
+                                providedOtp: data.providedOtp,
+                                quantityReceivedKg: data.quantityReceivedKg,
+                                evidenceUrl: data.evidenceUrl,
+                              });
                               setDeliveryStatus(delivery.id, "Delivered");
-                              toast.success(
-                                `Delivery ${delivery.id} marked as DELIVERED to buyer!`,
-                              );
+                              refreshLiveState();
                             }}
-                          >
-                            4. Mark Delivered
-                          </Button>
+                            trigger={
+                              <Button
+                                size="sm"
+                                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
+                              >
+                                4. Verify Proof of Delivery (OTP)
+                              </Button>
+                            }
+                          />
                         </div>
                       </div>
                     </div>

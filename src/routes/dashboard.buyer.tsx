@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 import { KYBVerificationModal } from "@/components/kyb/KYBVerificationModal";
+import { DisputeModal } from "@/components/disputes/DisputeModal";
 import {
   ShoppingBasket,
   Truck,
@@ -32,6 +33,7 @@ import { TrustScore } from "@/components/trust/TrustScore";
 import { ProduceImage } from "@/components/marketplace/ProduceImage";
 import { AIAssistant } from "@/components/ai/AIAssistant";
 import { useApp, formatNaira, timeAgo } from "@/lib/store";
+import { api } from "@/lib/api-client";
 import type { Order } from "@/lib/types";
 import { toast } from "sonner";
 
@@ -228,15 +230,48 @@ function BuyerDashboard() {
                       </div>
 
                       {/* Complete / Rate button if delivered */}
-                      {isDelivered && !order.ratedByBuyer && (
-                        <Button
-                          className="bg-success text-success-foreground hover:bg-success/90 font-bold self-end sm:self-auto"
-                          onClick={() => setRatingOrder(order)}
-                        >
-                          <Star className="mr-1.5 size-4" />
-                          Confirm & Rate Counterparties
-                        </Button>
-                      )}
+                      <div className="flex flex-wrap items-center gap-2 self-end sm:self-auto">
+                        <DisputeModal
+                          orderId={order.id}
+                          orderAmount={order.totalPrice}
+                          respondentName={farmer?.name || "Farmer"}
+                          onSubmitDispute={async (data) => {
+                            await api.disputes.create({
+                              orderId: order.id,
+                              reason: data.reason,
+                              description: data.description,
+                              evidenceUrls: data.evidenceUrl ? [data.evidenceUrl] : [],
+                            });
+                            refreshLiveState();
+                          }}
+                        />
+
+                        {isDelivered && !order.ratedByBuyer && (
+                          <Button
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
+                            onClick={() => setRatingOrder(order)}
+                          >
+                            <Star className="mr-1.5 size-4" />
+                            Confirm & Rate Counterparties
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Delivery OTP Badge */}
+                    <div className="flex items-center justify-between rounded-xl bg-primary/10 border border-primary/20 p-3 text-xs">
+                      <div className="flex items-center gap-2">
+                        <ShieldCheck className="size-4 text-primary" />
+                        <span className="text-foreground">
+                          Delivery Verification OTP:{" "}
+                          <strong className="font-mono text-sm tracking-widest text-primary">
+                            849201
+                          </strong>
+                        </span>
+                      </div>
+                      <span className="text-muted-foreground text-[11px]">
+                        Provide this code to the driver upon physical cargo inspection
+                      </span>
                     </div>
 
                     {/* Milestone Progress Stepper */}

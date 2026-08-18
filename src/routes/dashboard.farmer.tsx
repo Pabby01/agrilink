@@ -44,6 +44,7 @@ import {
 import { DashboardCard } from "@/components/common/DashboardCard";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { TrustScore } from "@/components/trust/TrustScore";
+import { TrustBreakdownCard } from "@/components/trust/TrustBreakdownCard";
 import { ProduceImage } from "@/components/marketplace/ProduceImage";
 import { AIAssistant } from "@/components/ai/AIAssistant";
 import { useApp, formatNaira, timeAgo } from "@/lib/store";
@@ -399,8 +400,38 @@ function FarmerDashboard() {
           </Card>
         </div>
 
-        {/* Right Column: AI Assistant & Profile Stats */}
+        {/* Right Column: Trust Model, AI Assistant & Profile Stats */}
         <div className="space-y-6">
+          {trust && (
+            <TrustBreakdownCard
+              trustProfile={{
+                userId: farmer.id,
+                score: trust.score,
+                level: trust.level,
+                rating: trust.rating,
+                completedTransactions: trust.completedTransactions,
+                successfulDeliveries: trust.successfulDeliveries,
+                successfulOrders: trust.completedTransactions,
+                cancelledOrders: trust.cancelledOrders,
+                fulfilmentRate: trust.fulfilmentRate,
+                cancellationRate: trust.cancellationRate,
+                disputeRate: 0,
+                lateRate: 0,
+                isVerified: trust.verified,
+                history: trust.history.map((h, i) => ({
+                  id: `th-${i}`,
+                  userId: farmer.id,
+                  type: "TRANSACTION_COMPLETED",
+                  scoreDelta: 2,
+                  resultingScore: h.score,
+                  reason: h.reason,
+                  timestamp: h.date,
+                })),
+                updatedAt: new Date().toISOString(),
+              }}
+            />
+          )}
+
           <AIAssistant role="farmer" />
 
           {/* Quick Profile Summary */}
