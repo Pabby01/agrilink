@@ -179,6 +179,8 @@ export interface DBPayment {
   created_at: string;
 }
 
+import { IS_DEMO_MODE } from "../lib/config";
+
 // In-Memory Synchronized Relational Store (with initial seed data)
 class BackendDatabase {
   users: Map<string, DBUser> = new Map();
@@ -197,8 +199,51 @@ class BackendDatabase {
   }
 
   seedInitialData() {
-    // 1. Users
     const defaultPasswordHash = "c81308a3f81de408990c74fb553d100fbca5728a49f50e9ec195fa3fa7a9b0c7"; // 'Agrolink@2026'
+
+    // Root Admin (Always Available for System Governance)
+    const admin: DBUser = {
+      id: "u-admin-1",
+      email: "admin@agrolink.ng",
+      password_hash: defaultPasswordHash,
+      password_salt: "salt_admin_ops_2026",
+      role: "admin",
+      full_name: "Agrolink Operations Team",
+      business_name: "Agrolink Governance HQ",
+      phone: "+234 800 000 0000",
+      location_name: "Abuja Command Center",
+      latitude: 9.0765,
+      longitude: 7.3986,
+      avatar_initials: "AO",
+      bio: "Compliance, KYB oversight, dispute resolution, and escrow settlement control.",
+      kyb_tier: 3,
+      is_verified: true,
+      is_active: true,
+      is_flagged: false,
+      created_at: "2026-01-01T00:00:00Z",
+      updated_at: "2026-08-18T00:00:00Z",
+    };
+    this.users.set(admin.id, admin);
+
+    this.trustProfiles.set(admin.id, {
+      user_id: admin.id,
+      score: 100,
+      level: "High Trust",
+      rating: 5.0,
+      completed_transactions: 0,
+      successful_deliveries: 0,
+      cancelled_orders: 0,
+      fulfilment_rate: 100,
+      cancellation_rate: 0,
+      verified: true,
+      history: [{ date: "2026-01-01", score: 100, reason: "System administrator authority" }],
+      updated_at: "2026-01-01T00:00:00Z",
+    });
+
+    // If demo mode is turned OFF, stop here and leave marketplace/orders/deliveries 100% clean
+    if (!IS_DEMO_MODE) {
+      return;
+    }
 
     const farmer: DBUser = {
       id: "u-farmer-1",
@@ -266,29 +311,7 @@ class BackendDatabase {
       updated_at: "2026-08-18T08:00:00Z",
     };
 
-    const admin: DBUser = {
-      id: "u-admin-1",
-      email: "admin@agrolink.ng",
-      password_hash: defaultPasswordHash,
-      password_salt: "salt_admin_ops_2026",
-      role: "admin",
-      full_name: "Agrolink Operations Team",
-      business_name: "Agrolink Governance HQ",
-      phone: "+234 800 000 0000",
-      location_name: "Abuja Command Center",
-      latitude: 9.0765,
-      longitude: 7.3986,
-      avatar_initials: "AO",
-      bio: "Compliance, KYB oversight, dispute resolution, and escrow settlement control.",
-      kyb_tier: 3,
-      is_verified: true,
-      is_active: true,
-      is_flagged: false,
-      created_at: "2026-01-01T00:00:00Z",
-      updated_at: "2026-08-18T00:00:00Z",
-    };
-
-    [farmer, buyer, transporter, admin].forEach((u) => this.users.set(u.id, u));
+    [farmer, buyer, transporter].forEach((u) => this.users.set(u.id, u));
 
     // 2. KYB Verifications
     this.kybVerifications.set("kyb-1", {

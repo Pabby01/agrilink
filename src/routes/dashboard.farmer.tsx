@@ -58,11 +58,31 @@ export const Route = createFileRoute("/dashboard/farmer")({
 });
 
 function FarmerDashboard() {
-  const { state, currentUser, getTrust, getUser, createListing, toggleListing, setOrderStatus } =
-    useApp();
+  const {
+    state,
+    currentUser,
+    getTrust,
+    getUser,
+    createListing,
+    toggleListing,
+    setOrderStatus,
+    refreshLiveState,
+  } = useApp();
 
   const farmerId = currentUser?.id ?? "u-farmer-1";
-  const farmer = getUser(farmerId) ?? state.users.find((u) => u.id === "u-farmer-1")!;
+  const farmer = currentUser ??
+    getUser(farmerId) ?? {
+      id: farmerId,
+      name: "Commercial Farmer",
+      role: "farmer" as const,
+      businessName: "Agro Farm Enterprise",
+      location: "Kano State",
+      coords: { lat: 12.0022, lng: 8.592 },
+      avatar: "CF",
+      phone: "+234 800 000 0000",
+      bio: "Commercial agricultural producer.",
+      verified: true,
+    };
   const trust = getTrust(farmerId);
 
   const myListings = state.produce.filter((p) => p.farmerId === farmerId);

@@ -33,6 +33,7 @@ import { DashboardCard } from "@/components/common/DashboardCard";
 import { TrustScore } from "@/components/trust/TrustScore";
 import { AgroMap } from "@/components/map/AgroMap";
 import { useApp, formatNaira } from "@/lib/store";
+import { IS_DEMO_MODE } from "@/lib/config";
 import type { Role } from "@/lib/types";
 import { toast } from "sonner";
 
@@ -44,7 +45,7 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminDashboard() {
-  const { state, resetDemo, getTrust } = useApp();
+  const { state, resetDemo, refreshLiveState, getTrust } = useApp();
   const [roleFilter, setRoleFilter] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -80,17 +81,31 @@ function AdminDashboard() {
         title="Operations & Integrity Control"
         subtitle="Live oversight of national agricultural trade, user trust scores, active logistics, and risk management"
         actions={
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              resetDemo();
-              toast.success("All mock data reset to initial seeds");
-            }}
-          >
-            <RotateCcw className="mr-1.5 size-4" />
-            Reset State Seed
-          </Button>
+          IS_DEMO_MODE ? (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                resetDemo();
+                toast.success("All mock data reset to initial seeds");
+              }}
+            >
+              <RotateCcw className="mr-1.5 size-4" />
+              Reset State Seed
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={async () => {
+                await refreshLiveState();
+                toast.success("Live network state synchronized");
+              }}
+            >
+              <Activity className="mr-1.5 size-4" />
+              Sync Network State
+            </Button>
+          )
         }
       />
 

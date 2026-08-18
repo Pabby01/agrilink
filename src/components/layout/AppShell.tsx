@@ -16,6 +16,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ThemeToggle } from "@/components/theme-provider";
 import { useApp, timeAgo } from "@/lib/store";
+import { IS_DEMO_MODE } from "@/lib/config";
 import type { Role } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -53,7 +54,7 @@ function navFor(role: Role | null) {
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { role, setRole, currentUser, notificationsFor, markNotificationsRead, resetDemo } =
+  const { role, setRole, currentUser, notificationsFor, markNotificationsRead, resetDemo, logout } =
     useApp();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -153,35 +154,61 @@ export function AppShell({ children }: { children: ReactNode }) {
 
             <ThemeToggle />
 
-            {role ? (
+            {currentUser || role ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm" className="hidden sm:inline-flex">
-                    <Badge variant="secondary" className="mr-1.5">
-                      {roleLabel[role]}
-                    </Badge>
-                    {currentUser?.name}
+                    {role && (
+                      <Badge variant="secondary" className="mr-1.5 capitalize">
+                        {roleLabel[role]}
+                      </Badge>
+                    )}
+                    {currentUser?.name || "User Account"}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>Switch demo role</DropdownMenuLabel>
-                  {(Object.keys(roleLabel) as Role[]).map((r) => (
-                    <DropdownMenuItem key={r} onSelect={() => switchRole(r)}>
-                      {roleLabel[r]}
-                    </DropdownMenuItem>
-                  ))}
+                  {IS_DEMO_MODE ? (
+                    <>
+                      <DropdownMenuLabel>Switch demo role</DropdownMenuLabel>
+                      {(Object.keys(roleLabel) as Role[]).map((r) => (
+                        <DropdownMenuItem key={r} onSelect={() => switchRole(r)}>
+                          {roleLabel[r]}
+                        </DropdownMenuItem>
+                      ))}
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onSelect={() => {
+                          resetDemo();
+                          toast.success("Demo data reset");
+                        }}
+                      >
+                        <RotateCcw className="mr-2 size-4" /> Reset demo data
+                      </DropdownMenuItem>
+                    </>
+                  ) : (
+                    <>
+                      <DropdownMenuLabel>Signed in as</DropdownMenuLabel>
+                      <div className="px-2 py-1 text-xs text-muted-foreground border-b mb-1">
+                        <p className="font-semibold text-foreground">{currentUser?.name}</p>
+                        <p>{currentUser?.location || "Verified Network Member"}</p>
+                      </div>
+                      {role && (
+                        <DropdownMenuItem asChild>
+                          <Link to={roleHome[role]}>Open Dashboard</Link>
+                        </DropdownMenuItem>
+                      )}
+                      {currentUser && (
+                        <DropdownMenuItem asChild>
+                          <Link to={`/profile/${currentUser.id}` as never}>My Trust Profile</Link>
+                        </DropdownMenuItem>
+                      )}
+                    </>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
-                    onSelect={() => {
-                      resetDemo();
-                      toast.success("Demo data reset");
-                    }}
-                  >
-                    <RotateCcw className="mr-2 size-4" /> Reset demo data
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onSelect={() => {
-                      setRole(null);
+                    onSelect={async () => {
+                      await logout();
+                      toast.success("Signed out successfully");
                       router.navigate({ to: "/auth" });
                     }}
                   >
@@ -191,7 +218,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               </DropdownMenu>
             ) : (
               <Button asChild size="sm">
-                <Link to="/auth">Sign in</Link>
+                <Link to="/auth">Sign in / Register</Link>
               </Button>
             )}
 
@@ -214,13 +241,28 @@ export function AppShell({ children }: { children: ReactNode }) {
                       {l.label}
                     </Link>
                   ))}
-                  <Link
-                    to="/auth"
-                    onClick={() => setOpen(false)}
-                    className="rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted"
-                  >
-                    Switch role
-                  </Link>
+                  {currentUser ? (
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        setOpen(false);
+                        await logout();
+                        toast.success("Signed out successfully");
+                        router.navigate({ to: "/auth" });
+                      }}
+                      className="rounded-lg px-3 py-2.5 text-left text-sm font-medium text-destructive hover:bg-destructive/10 cursor-pointer"
+                    >
+                      Sign out
+                    </button>
+                  ) : (
+                    <Link
+                      to="/auth"
+                      onClick={() => setOpen(false)}
+                      className="rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted"
+                    >
+                      Sign in / Register
+                    </Link>
+                  )}
                 </nav>
               </SheetContent>
             </Sheet>
@@ -243,7 +285,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             © {new Date().getFullYear()} Agrolink — the trusted network moving food from farm to
             market.
           </p>
-          <p>Thrive in Tech Hackathon Prototype · Demo data is stored locally in your browser.</p>
+          <p>
+            {IS_DEMO_MODE
+              ? "Demo Mode Active · Seed data stored in local browser state."
+              : "Live Production Network · Bank-grade Escrow & Tier-2 KYB Compliance."}
+          </p>
         </div>
       </footer>
     </div>

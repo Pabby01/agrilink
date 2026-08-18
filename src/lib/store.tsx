@@ -8,6 +8,8 @@ import {
   type ReactNode,
 } from "react";
 import * as seed from "./mock-data";
+import { IS_DEMO_MODE } from "./config";
+import { api, getStoredSessionToken, setStoredSessionToken } from "./api-client";
 import type {
   Delivery,
   DeliveryStatus,
@@ -19,12 +21,6 @@ import type {
   TrustProfile,
   User,
 } from "./types";
-
-/**
- * Local mock persistence layer.
- * Everything in this module is a stand-in for a future API service. Swap the
- * body of these functions for network calls and the UI keeps working.
- */
 
 const STORAGE_KEY = "agrolink.state.v1";
 const ROLE_KEY = "agrolink.role.v1";
@@ -38,14 +34,28 @@ export interface AppState {
   notifications: Notification[];
 }
 
-const freshState = (): AppState => ({
-  users: structuredClone(seed.users),
-  trust: structuredClone(seed.trustProfiles),
-  produce: structuredClone(seed.produce),
-  orders: structuredClone(seed.orders),
-  deliveries: structuredClone(seed.deliveries),
-  notifications: structuredClone(seed.notifications),
+const emptyState = (): AppState => ({
+  users: [],
+  trust: [],
+  produce: [],
+  orders: [],
+  deliveries: [],
+  notifications: [],
 });
+
+const freshState = (): AppState => {
+  if (!IS_DEMO_MODE) {
+    return emptyState();
+  }
+  return {
+    users: structuredClone(seed.users),
+    trust: structuredClone(seed.trustProfiles),
+    produce: structuredClone(seed.produce),
+    orders: structuredClone(seed.orders),
+    deliveries: structuredClone(seed.deliveries),
+    notifications: structuredClone(seed.notifications),
+  };
+};
 
 export const demoUserByRole: Record<Role, string> = {
   farmer: "u-farmer-1",
@@ -62,8 +72,12 @@ interface Ctx {
   hydrated: boolean;
   role: Role | null;
   currentUser: User | null;
+  isDemoMode: boolean;
   setRole: (role: Role | null) => void;
+  setCurrentUser: (user: User | null) => void;
   resetDemo: () => void;
+  logout: () => Promise<void>;
+  refreshLiveState: () => Promise<void>;
   getUser: (id: string) => User | undefined;
   getTrust: (id: string) => TrustProfile | undefined;
   getProduce: (id: string) => Produce | undefined;
@@ -89,40 +103,180 @@ const uid = (prefix: string) => `${prefix}-${Math.random().toString(36).slice(2,
 export function AppStoreProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AppState>(freshState);
   const [role, setRoleState] = useState<Role | null>(null);
+  const [realUser, setRealUser] = useState<User | null>(null);
   const [hydrated, setHydrated] = useState(false);
 
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setState({ ...freshState(), ...(JSON.parse(raw) as AppState) });
-      const savedRole = localStorage.getItem(ROLE_KEY) as Role | null;
-      if (savedRole) setRoleState(savedRole);
-    } catch {
-      /* corrupted storage — fall back to seed */
+  // Sync Live Data from Backend API
+  const refreshLiveState = useCallback(async () => {
+    const token = getStoredSessionToken();
+    if (token) {
+      const meRes = await api.auth.getMe();
+      if (meRes.success && meRes.data?.user) {
+        const u = meRes.data.user as unknown as Record<string, unknown>;
+        const mappedUser: User = {
+          id: String(u["id"] || "u-live"),
+          name: String(u["full_name"] || u["name"] || "Live User"),
+          role: (u["role"] as Role) || "farmer",
+          location: String(u["location_name"] || u["location"] || "Nigeria"),
+          coords: {
+            lat: typeof u["latitude"] === "number" ? u["latitude"] : 9.082,
+            lng: typeof u["longitude"] === "number" ? u["longitude"] : 8.6753,
+          },
+          joined: String(u["created_at"] || new Date().toISOString().split("T")[0]),
+          avatarInitials: String(u["avatar_initials"] || u["avatarInitials"] || "AU"),
+          phone: String(u["phone"] || ""),
+          bio: String(u["bio"] || ""),
+          flagged: Boolean(u["is_flagged"]),
+        };
+        setRealUser(mappedUser);
+        setRoleState(mappedUser.role);
+
+        if (meRes.data.trust) {
+          const t = meRes.data.trust as unknown as Record<string, unknown>;
+          const score = typeof t["score"] === "number" ? t["score"] : 80;
+          const mappedTrust: TrustProfile = {
+            userId: String(t["user_id"] || t["userId"] || mappedUser.id),
+            score,
+            level: (t["level"] as TrustProfile["level"]) || levelFor(score),
+            rating: typeof t["rating"] === "number" ? t["rating"] : 5.0,
+            completedTransactions:
+              typeof t["completed_transactions"] === "number"
+                ? t["completed_transactions"]
+                : typeof t["completedTransactions"] === "number"
+                  ? t["completedTransactions"]
+                  : 0,
+            successfulDeliveries:
+              typeof t["successful_deliveries"] === "number"
+                ? t["successful_deliveries"]
+                : typeof t["successfulDeliveries"] === "number"
+                  ? t["successfulDeliveries"]
+                  : 0,
+            cancelledOrders:
+              typeof t["cancelled_orders"] === "number"
+                ? t["cancelled_orders"]
+                : typeof t["cancelledOrders"] === "number"
+                  ? t["cancelledOrders"]
+                  : 0,
+            fulfilmentRate:
+              typeof t["fulfilment_rate"] === "number"
+                ? t["fulfilment_rate"]
+                : typeof t["fulfilmentRate"] === "number"
+                  ? t["fulfilmentRate"]
+                  : 100,
+            cancellationRate:
+              typeof t["cancellation_rate"] === "number"
+                ? t["cancellation_rate"]
+                : typeof t["cancellationRate"] === "number"
+                  ? t["cancellationRate"]
+                  : 0,
+            verified: typeof t["verified"] === "boolean" ? t["verified"] : true,
+            history: Array.isArray(t["history"]) ? (t["history"] as TrustProfile["history"]) : [],
+          };
+          setState((s) => ({
+            ...s,
+            users: [mappedUser, ...s.users.filter((x) => x.id !== mappedUser.id)],
+            trust: [mappedTrust, ...s.trust.filter((x) => x.userId !== mappedUser.id)],
+          }));
+        }
+      }
     }
-    setHydrated(true);
+
+    // Fetch Live Produce
+    const prodRes = await api.produce.list();
+    if (prodRes.success && prodRes.data) {
+      const mappedProduce: Produce[] = prodRes.data.map((rawItem) => {
+        const p = rawItem as unknown as Record<string, unknown>;
+        const images = Array.isArray(p["images"]) ? (p["images"] as string[]) : [];
+        return {
+          id: String(p["id"] || `prod-${Date.now()}`),
+          farmerId: String(p["farmer_id"] || p["farmerId"] || "u-farmer-1"),
+          name: String(p["name"] || "Agricultural Produce"),
+          category: (p["category"] as Produce["category"]) || "Vegetables",
+          pricePerKg:
+            typeof p["price_per_kg"] === "number"
+              ? p["price_per_kg"]
+              : typeof p["pricePerKg"] === "number"
+                ? p["pricePerKg"]
+                : 500,
+          quantityKg:
+            typeof p["quantity_kg"] === "number"
+              ? p["quantity_kg"]
+              : typeof p["quantityKg"] === "number"
+                ? p["quantityKg"]
+                : 100,
+          location: String(p["location_name"] || p["location"] || "Nigeria"),
+          image: images[0] || String(p["image"] || "/images/tomatoes.jpg"),
+          available:
+            typeof p["is_available"] === "boolean"
+              ? p["is_available"]
+              : typeof p["available"] === "boolean"
+                ? p["available"]
+                : true,
+          listedAt: String(p["created_at"] || p["listedAt"] || new Date().toISOString()),
+          description: String(p["description"] || ""),
+        };
+      });
+      setState((s) => ({
+        ...s,
+        produce: mappedProduce,
+      }));
+    }
   }, []);
 
   useEffect(() => {
-    if (!hydrated) return;
+    try {
+      if (IS_DEMO_MODE) {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) setState({ ...freshState(), ...(JSON.parse(raw) as AppState) });
+        const savedRole = localStorage.getItem(ROLE_KEY) as Role | null;
+        if (savedRole) setRoleState(savedRole);
+      }
+    } catch {
+      /* fallback */
+    }
+
+    refreshLiveState();
+    setHydrated(true);
+  }, [refreshLiveState]);
+
+  useEffect(() => {
+    if (!hydrated || !IS_DEMO_MODE) return;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }, [state, hydrated]);
 
   const setRole = useCallback((next: Role | null) => {
     setRoleState(next);
-    if (next) localStorage.setItem(ROLE_KEY, next);
-    else localStorage.removeItem(ROLE_KEY);
+    if (IS_DEMO_MODE) {
+      if (next) localStorage.setItem(ROLE_KEY, next);
+      else localStorage.removeItem(ROLE_KEY);
+    }
+  }, []);
+
+  const logout = useCallback(async () => {
+    await api.auth.logout();
+    setStoredSessionToken(null);
+    setRealUser(null);
+    setRoleState(null);
+    if (IS_DEMO_MODE) {
+      localStorage.removeItem(ROLE_KEY);
+      localStorage.removeItem(STORAGE_KEY);
+    }
+    setState(freshState());
   }, []);
 
   const resetDemo = useCallback(() => {
     setState(freshState());
-    localStorage.removeItem(STORAGE_KEY);
+    if (IS_DEMO_MODE) {
+      localStorage.removeItem(STORAGE_KEY);
+    }
   }, []);
 
-  const currentUser = useMemo(
-    () => (role ? (state.users.find((u) => u.id === demoUserByRole[role]) ?? null) : null),
-    [role, state.users],
-  );
+  const currentUser = useMemo(() => {
+    if (!IS_DEMO_MODE) {
+      return realUser;
+    }
+    return role ? (state.users.find((u) => u.id === demoUserByRole[role]) ?? null) : null;
+  }, [role, realUser, state.users]);
 
   const notify = (
     list: Notification[],
@@ -148,14 +302,18 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
     hydrated,
     role,
     currentUser,
+    isDemoMode: IS_DEMO_MODE,
     setRole,
+    setCurrentUser: setRealUser,
     resetDemo,
+    logout,
+    refreshLiveState,
     getUser: (id) => state.users.find((u) => u.id === id),
     getTrust: (id) => state.trust.find((t) => t.userId === id),
     getProduce: (id) => state.produce.find((p) => p.id === id),
 
     createListing: (input) => {
-      const farmerId = currentUser?.id ?? demoUserByRole.farmer;
+      const farmerId = currentUser?.id ?? (IS_DEMO_MODE ? demoUserByRole.farmer : "u-farmer-1");
       const listing: Produce = {
         ...input,
         id: uid("p"),
@@ -185,7 +343,7 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
 
     placeOrder: ({ produceId, quantityKg, urgency }) => {
       const item = state.produce.find((p) => p.id === produceId);
-      const buyerId = currentUser?.role === "buyer" ? currentUser.id : demoUserByRole.buyer;
+      const buyerId = currentUser?.id ?? (IS_DEMO_MODE ? demoUserByRole.buyer : "u-buyer-1");
       if (!item) return null;
       const farmer = state.users.find((u) => u.id === item.farmerId);
       const buyer = state.users.find((u) => u.id === buyerId);
@@ -207,52 +365,50 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
         orderId,
         pickup: {
           label: `${farmer?.name ?? "Farm"}, ${item.location.split(",")[0]}`,
-          lat: farmer?.coords.lat ?? 9,
-          lng: farmer?.coords.lng ?? 8,
+          lat: farmer?.coords.lat ?? 9.082,
+          lng: farmer?.coords.lng ?? 8.6753,
         },
         destination: {
           label: `${buyer?.name ?? "Buyer"}, ${(buyer?.location ?? "Lagos").split(",")[0]}`,
-          lat: buyer?.coords.lat ?? 6.52,
-          lng: buyer?.coords.lng ?? 3.38,
+          lat: buyer?.coords.lat ?? 6.5244,
+          lng: buyer?.coords.lng ?? 3.3792,
         },
         distanceKm: Math.max(
           40,
           Math.round(
             Math.hypot(
-              (farmer?.coords.lat ?? 9) - (buyer?.coords.lat ?? 6.5),
-              (farmer?.coords.lng ?? 8) - (buyer?.coords.lng ?? 3.4),
-            ) * 111,
+              ((farmer?.coords.lat ?? 9) - (buyer?.coords.lat ?? 6.52)) * 111,
+              ((farmer?.coords.lng ?? 8) - (buyer?.coords.lng ?? 3.38)) * 111,
+            ),
           ),
         ),
         fee: Math.round(quantityKg * 40 + (urgency === "Urgent" ? 25_000 : 0)),
-        urgency,
         status: "Pending",
+        urgency,
         createdAt: new Date().toISOString(),
       };
-      setState((s) => {
-        let n = notify(
-          s.notifications,
-          item.farmerId,
-          "New order received",
-          `${buyer?.name ?? "A buyer"} ordered ${quantityKg}kg of ${item.name}.`,
-          "success",
-        );
-        n = notify(
-          n,
-          demoUserByRole.transporter,
-          "New delivery job available",
-          `${delivery.pickup.label} → ${delivery.destination.label}, ${delivery.distanceKm}km.`,
-        );
-        return {
-          ...s,
-          orders: [order, ...s.orders],
-          deliveries: [delivery, ...s.deliveries],
-          produce: s.produce.map((p) =>
-            p.id === produceId ? { ...p, quantityKg: Math.max(0, p.quantityKg - quantityKg) } : p,
+
+      setState((s) => ({
+        ...s,
+        produce: s.produce.map((p) =>
+          p.id === produceId ? { ...p, quantityKg: Math.max(0, p.quantityKg - quantityKg) } : p,
+        ),
+        orders: [order, ...s.orders],
+        deliveries: [delivery, ...s.deliveries],
+        notifications: notify(
+          notify(
+            s.notifications,
+            item.farmerId,
+            "New order received",
+            `A buyer ordered ${quantityKg}kg of ${item.name}.`,
+            "info",
           ),
-          notifications: n,
-        };
-      });
+          buyerId,
+          "Order placed in escrow",
+          `₦${order.totalPrice.toLocaleString()} locked for ${item.name}.`,
+          "success",
+        ),
+      }));
       return order;
     },
 
@@ -260,50 +416,48 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
       setState((s) => {
         const order = s.orders.find((o) => o.id === orderId);
         if (!order) return s;
+        const targetUserId = status === "Accepted" ? order.buyerId : order.farmerId;
         return {
           ...s,
           orders: s.orders.map((o) => (o.id === orderId ? { ...o, status } : o)),
           notifications: notify(
             s.notifications,
-            order.buyerId,
+            targetUserId,
             `Order ${status.toLowerCase()}`,
-            `Your order ${orderId} is now marked "${status}".`,
-            status === "Cancelled" ? "warning" : "success",
+            `Order #${orderId} was marked as ${status}.`,
+            status === "Accepted" ? "success" : "info",
           ),
         };
       }),
 
     acceptDelivery: (deliveryId) =>
       setState((s) => {
+        const transporterId =
+          currentUser?.id ?? (IS_DEMO_MODE ? demoUserByRole.transporter : "u-transporter-1");
         const delivery = s.deliveries.find((d) => d.id === deliveryId);
         if (!delivery) return s;
         const order = s.orders.find((o) => o.id === delivery.orderId);
-        const transporterId = demoUserByRole.transporter;
-        let n = s.notifications;
-        if (order) {
-          n = notify(
-            n,
-            order.buyerId,
-            "Your delivery has been accepted",
-            `SwiftHaul Logistics accepted the delivery for order ${order.id}.`,
-            "success",
-          );
-          n = notify(
-            n,
-            order.farmerId,
-            "Transporter assigned",
-            `A transporter is en route to pick up ${order.id}.`,
-          );
-        }
         return {
           ...s,
           deliveries: s.deliveries.map((d) =>
             d.id === deliveryId ? { ...d, transporterId, status: "Accepted" } : d,
           ),
           orders: s.orders.map((o) =>
-            o.id === delivery.orderId ? { ...o, status: "Awaiting Pickup" } : o,
+            o.id === delivery.orderId ? { ...o, status: "In Transit" } : o,
           ),
-          notifications: n,
+          notifications: notify(
+            notify(
+              s.notifications,
+              order?.buyerId ?? "",
+              "Transporter assigned",
+              "A verified transporter has accepted your delivery.",
+              "info",
+            ),
+            transporterId,
+            "Delivery job claimed",
+            `Haulage job #${deliveryId} is now assigned to you.`,
+            "success",
+          ),
         };
       }),
 
@@ -311,72 +465,51 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
       setState((s) => {
         const delivery = s.deliveries.find((d) => d.id === deliveryId);
         if (!delivery) return s;
-        const orderStatus: OrderStatus | null =
-          status === "Picked Up"
-            ? "In Transit"
-            : status === "In Transit"
-              ? "In Transit"
-              : status === "Delivered"
-                ? "Delivered"
-                : status === "Accepted"
-                  ? "Awaiting Pickup"
-                  : null;
         const order = s.orders.find((o) => o.id === delivery.orderId);
-        let n = s.notifications;
-        if (order && status === "Delivered") {
-          n = notify(
-            n,
-            order.buyerId,
-            "Your order has been delivered",
-            `Order ${order.id} arrived. Confirm to complete.`,
-            "success",
-          );
-          n = notify(
-            n,
-            order.farmerId,
-            "Delivery completed",
-            `Order ${order.id} was delivered successfully.`,
-            "success",
-          );
-        }
+        const nextOrderStatus: OrderStatus | undefined =
+          status === "Delivered" ? "Delivered" : status === "In Transit" ? "In Transit" : undefined;
         return {
           ...s,
           deliveries: s.deliveries.map((d) => (d.id === deliveryId ? { ...d, status } : d)),
-          orders: orderStatus
-            ? s.orders.map((o) => (o.id === delivery.orderId ? { ...o, status: orderStatus } : o))
+          orders: nextOrderStatus
+            ? s.orders.map((o) =>
+                o.id === delivery.orderId ? { ...o, status: nextOrderStatus } : o,
+              )
             : s.orders,
-          notifications: n,
+          notifications: notify(
+            s.notifications,
+            order?.buyerId ?? "",
+            `Shipment ${status.toLowerCase()}`,
+            `Your delivery #${deliveryId} is now ${status.toLowerCase()}.`,
+            status === "Delivered" ? "success" : "info",
+          ),
         };
       }),
 
     rateCounterparty: (orderId, targetUserId, rating) =>
       setState((s) => {
         const order = s.orders.find((o) => o.id === orderId);
-        if (!order) return s;
-        const isBuyerRating = targetUserId !== order.buyerId;
+        const isBuyerRating = currentUser?.role === "buyer" || currentUser?.id === order?.buyerId;
         const trust = s.trust.map((t) => {
           if (t.userId !== targetUserId) return t;
-          const completed = t.completedTransactions + 1;
-          const newRating = Number(
-            ((t.rating * t.completedTransactions + rating) / completed).toFixed(2),
-          );
-          const score = Math.max(
-            0,
-            Math.min(100, Math.round(t.score + (rating >= 4 ? 2 : rating >= 3 ? 0 : -4))),
-          );
+          const currentTotal = t.rating * t.completedTransactions;
+          const newCompleted = t.completedTransactions + 1;
+          const newRating = Number(((currentTotal + rating) / newCompleted).toFixed(1));
+          const scoreDelta = rating >= 4 ? 2 : rating <= 2 ? -5 : 0;
+          const newScore = Math.max(0, Math.min(100, t.score + scoreDelta));
           return {
             ...t,
-            completedTransactions: completed,
+            score: newScore,
             rating: newRating,
-            score,
-            level: levelFor(score),
+            completedTransactions: newCompleted,
+            level: levelFor(newScore),
             history: [
-              ...t.history,
               {
-                date: new Date().toISOString(),
-                score,
-                reason: `${rating}-star rating on order ${orderId}`,
+                date: new Date().toISOString().split("T")[0]!,
+                score: newScore,
+                reason: `${rating}★ rating on order #${orderId}`,
               },
+              ...t.history,
             ],
           };
         });

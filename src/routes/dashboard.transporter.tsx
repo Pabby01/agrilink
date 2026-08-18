@@ -36,11 +36,30 @@ export const Route = createFileRoute("/dashboard/transporter")({
 });
 
 function TransporterDashboard() {
-  const { state, currentUser, getTrust, getUser, acceptDelivery, setDeliveryStatus } = useApp();
+  const {
+    state,
+    currentUser,
+    getTrust,
+    getUser,
+    acceptDelivery,
+    setDeliveryStatus,
+    refreshLiveState,
+  } = useApp();
 
   const transporterId = currentUser?.id ?? "u-transporter-1";
-  const transporter =
-    getUser(transporterId) ?? state.users.find((u) => u.id === "u-transporter-1")!;
+  const transporter = currentUser ??
+    getUser(transporterId) ?? {
+      id: transporterId,
+      name: "Verified Freight Transporter",
+      role: "transporter" as const,
+      businessName: "Agro Haulage Logistics",
+      location: "Abuja Transit Hub",
+      coords: { lat: 9.0765, lng: 7.3986 },
+      avatar: "VT",
+      phone: "+234 800 000 0000",
+      bio: "Interstate bulk food haulage fleet.",
+      verified: true,
+    };
   const trust = getTrust(transporterId);
 
   // Available open jobs (no transporter assigned or status Pending)

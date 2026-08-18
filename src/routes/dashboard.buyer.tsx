@@ -43,10 +43,22 @@ export const Route = createFileRoute("/dashboard/buyer")({
 });
 
 function BuyerDashboard() {
-  const { state, currentUser, getTrust, getUser, rateCounterparty } = useApp();
+  const { state, currentUser, getTrust, getUser, rateCounterparty, refreshLiveState } = useApp();
 
   const buyerId = currentUser?.id ?? "u-buyer-1";
-  const buyer = getUser(buyerId) ?? state.users.find((u) => u.id === "u-buyer-1")!;
+  const buyer = currentUser ??
+    getUser(buyerId) ?? {
+      id: buyerId,
+      name: "Verified Commercial Buyer",
+      role: "buyer" as const,
+      businessName: "Agro Distribution Hub",
+      location: "Lagos State",
+      coords: { lat: 6.5244, lng: 3.3792 },
+      avatar: "VB",
+      phone: "+234 800 000 0000",
+      bio: "Wholesale food distributor and commodity buyer.",
+      verified: true,
+    };
   const trust = getTrust(buyerId);
 
   const myOrders = state.orders.filter((o) => o.buyerId === buyerId);

@@ -30,9 +30,11 @@ import {
 } from "@/components/ui/select";
 import { useApp } from "@/lib/store";
 import { api } from "@/lib/api-client";
+import { IS_DEMO_MODE } from "@/lib/config";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 import type { Role } from "@/lib/types";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -100,7 +102,7 @@ const demoRoles: {
 ];
 
 function AuthPage() {
-  const { setRole } = useApp();
+  const { setRole, refreshLiveState } = useApp();
   const router = useRouter();
 
   // Login State
@@ -130,6 +132,7 @@ function AuthPage() {
     if (res.success && res.data?.user) {
       const user = res.data.user as { role: Role; full_name?: string };
       setRole(user.role);
+      await refreshLiveState();
       toast.success(`Welcome back, ${user.full_name || "Partner"}!`);
       const targetHome =
         user.role === "farmer"
@@ -167,6 +170,7 @@ function AuthPage() {
     if (res.success && res.data?.user) {
       const user = res.data.user as { role: Role };
       setRole(user.role);
+      await refreshLiveState();
       toast.success(`Account registered successfully as ${user.role}!`);
       const targetHome =
         regRole === "farmer"
@@ -216,58 +220,64 @@ function AuthPage() {
       </motion.div>
 
       <div className="mt-8">
-        <Tabs defaultValue="demo" className="w-full">
+        <Tabs defaultValue={IS_DEMO_MODE ? "demo" : "login"} className="w-full">
           <div className="flex justify-center">
-            <TabsList className="grid w-full max-w-md grid-cols-3">
-              <TabsTrigger value="demo">Demo Access</TabsTrigger>
+            <TabsList
+              className={cn("grid w-full max-w-md", IS_DEMO_MODE ? "grid-cols-3" : "grid-cols-2")}
+            >
+              {IS_DEMO_MODE && <TabsTrigger value="demo">Demo Access</TabsTrigger>}
               <TabsTrigger value="login">Sign In</TabsTrigger>
               <TabsTrigger value="register">Register</TabsTrigger>
             </TabsList>
           </div>
 
-          {/* TAB 1: 1-Click Quick Demo Switcher */}
-          <TabsContent value="demo" className="mt-8">
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={staggerContainer}
-              className="grid gap-5 sm:grid-cols-2"
-            >
-              {demoRoles.map((r) => (
-                <motion.div key={r.role} variants={fadeInUp}>
-                  <LiquidCard
-                    variant={r.variant}
-                    className="flex h-full flex-col justify-between p-6 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)]"
-                  >
-                    <div>
-                      <div className="flex items-start justify-between gap-3 border-b pb-3.5">
-                        <div className="flex items-center gap-3">
-                          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-muted text-foreground">
-                            <r.icon className="size-5" aria-hidden />
-                          </span>
-                          <div>
-                            <h2 className="font-display text-lg font-bold capitalize">{r.role}</h2>
-                            <p className="text-xs text-muted-foreground">{r.name}</p>
+          {/* TAB 1: 1-Click Quick Demo Switcher (Only visible in Demo Mode) */}
+          {IS_DEMO_MODE && (
+            <TabsContent value="demo" className="mt-8">
+              <motion.div
+                initial="hidden"
+                animate="visible"
+                variants={staggerContainer}
+                className="grid gap-5 sm:grid-cols-2"
+              >
+                {demoRoles.map((r) => (
+                  <motion.div key={r.role} variants={fadeInUp}>
+                    <LiquidCard
+                      variant={r.variant}
+                      className="flex h-full flex-col justify-between p-6 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)]"
+                    >
+                      <div>
+                        <div className="flex items-start justify-between gap-3 border-b pb-3.5">
+                          <div className="flex items-center gap-3">
+                            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-muted text-foreground">
+                              <r.icon className="size-5" aria-hidden />
+                            </span>
+                            <div>
+                              <h2 className="font-display text-lg font-bold capitalize">
+                                {r.role}
+                              </h2>
+                              <p className="text-xs text-muted-foreground">{r.name}</p>
+                            </div>
                           </div>
                         </div>
+                        <p className="mt-3.5 text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                          {r.blurb}
+                        </p>
                       </div>
-                      <p className="mt-3.5 text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                        {r.blurb}
-                      </p>
-                    </div>
 
-                    <Button
-                      className="mt-6 w-full font-bold shadow-xs transition-transform hover:scale-[1.02]"
-                      onClick={() => handleDemoSwitch(r.role)}
-                    >
-                      Instant Sign In as {r.role}
-                      <ArrowRight className="ml-1.5 size-4" />
-                    </Button>
-                  </LiquidCard>
-                </motion.div>
-              ))}
-            </motion.div>
-          </TabsContent>
+                      <Button
+                        className="mt-6 w-full font-bold shadow-xs transition-transform hover:scale-[1.02]"
+                        onClick={() => handleDemoSwitch(r.role)}
+                      >
+                        Instant Sign In as {r.role}
+                        <ArrowRight className="ml-1.5 size-4" />
+                      </Button>
+                    </LiquidCard>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </TabsContent>
+          )}
 
           {/* TAB 2: Sign In with Real Credentials */}
           <TabsContent value="login" className="mt-8">
