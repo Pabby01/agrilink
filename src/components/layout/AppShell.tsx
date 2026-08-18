@@ -34,15 +34,19 @@ const roleLabel: Record<Role, string> = {
 };
 
 function navFor(role: Role | null) {
-  const base = [{ to: "/marketplace", label: "Marketplace" }];
+  const base = [
+    { to: "/", label: "Home" },
+    { to: "/marketplace", label: "Marketplace" },
+    { to: "/insights", label: "AI Insights" },
+  ];
   if (!role) return base;
   return [
     { to: roleHome[role], label: "Dashboard" },
-    ...base,
-    { to: "/insights", label: "Agrolink AI" },
+    { to: "/marketplace", label: "Marketplace" },
+    { to: "/insights", label: "AI Insights" },
     {
       to: `/profile/${{ farmer: "u-farmer-1", buyer: "u-buyer-1", transporter: "u-transporter-1", admin: "u-admin-1" }[role]}`,
-      label: "Profile",
+      label: "Trust Profile",
     },
   ];
 }
@@ -227,8 +231,11 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <footer className="border-t border-border/70 bg-card/40">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-2 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <p>© {new Date().getFullYear()} Agrolink — trusted agriculture trade for Nigeria.</p>
-          <p>Hackathon MVP · demo data is stored locally in your browser.</p>
+          <p>
+            © {new Date().getFullYear()} Agrolink — the trusted network moving food from farm to
+            market.
+          </p>
+          <p>Thrive in Tech Hackathon Prototype · Demo data is stored locally in your browser.</p>
         </div>
       </footer>
     </div>

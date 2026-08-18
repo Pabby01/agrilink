@@ -84,25 +84,32 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Agrolink — Trusted Digital Agriculture Marketplace" },
+      { title: "Agrolink — The Trusted Network Moving Food from Farm to Market" },
       {
         name: "description",
         content:
-          "Connecting Nigerian farmers, buyers, and transporters through an end-to-end trust system, transparent pricing, and AI-powered decision support.",
+          "Agrolink connects farmers, buyers and transporters in one intelligent agricultural supply-chain network.",
       },
       { name: "author", content: "Agrolink" },
-      { property: "og:title", content: "Agrolink — Trusted Digital Agriculture Marketplace" },
+      {
+        property: "og:title",
+        content: "Agrolink — The Trusted Network Moving Food from Farm to Market",
+      },
       {
         property: "og:description",
         content:
-          "Verified farmers, guaranteed logistics, and fair pricing for agriculture across Nigeria.",
+          "Agrolink connects farmers, buyers and transporters in one intelligent agricultural supply-chain network.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Agrolink — Agriculture Connected by Trust" },
+      {
+        name: "twitter:title",
+        content: "Agrolink — The Trusted Network Moving Food from Farm to Market",
+      },
       {
         name: "twitter:description",
-        content: "Transparent trade connecting farmers, buyers, and transporters in Nigeria.",
+        content:
+          "Agrolink connects farmers, buyers and transporters in one intelligent agricultural supply-chain network.",
       },
     ],
     links: [

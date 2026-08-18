@@ -108,8 +108,8 @@ function FarmerDashboard() {
   return (
     <Page>
       <PageHeader
-        title={`Welcome back, ${farmer.name}`}
-        subtitle={`${farmer.location} · Member since ${new Date(farmer.joined).toLocaleDateString("en-NG", { month: "short", year: "numeric" })}`}
+        title="My Agrolink Network"
+        subtitle={`${farmer.name} (${farmer.location}) · Manage produce listings, track buyer orders, and build your reputation.`}
         actions={
           <Dialog open={openNewListing} onOpenChange={setOpenNewListing}>
             <DialogTrigger asChild>

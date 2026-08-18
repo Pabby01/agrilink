@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ShieldCheck,
@@ -6,67 +7,157 @@ import {
   Truck,
   Sparkles,
   ArrowRight,
-  TrendingUp,
   MapPin,
   CheckCircle2,
-  Lock,
+  TrendingUp,
+  Search,
+  Check,
+  Compass,
   ArrowUpRight,
-  BarChart3,
-  Users,
+  Activity,
+  Layers,
+  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ProduceCard } from "@/components/marketplace/ProduceCard";
 import { TrustScore } from "@/components/trust/TrustScore";
 import { TrustBreakdown } from "@/components/trust/TrustBreakdown";
 import { AgroMap } from "@/components/map/AgroMap";
-import { useApp, formatNaira } from "@/lib/store";
+import { NetworkHero } from "@/components/landing/NetworkHero";
+import { useApp } from "@/lib/store";
+import type { TrustProfile } from "@/lib/types";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Agrolink — The Trusted Network Moving Food from Farm to Market" },
+      {
+        name: "description",
+        content:
+          "Agrolink connects farmers, buyers and transporters in one intelligent agricultural supply-chain network.",
+      },
+      {
+        property: "og:title",
+        content: "Agrolink — The Trusted Network Moving Food from Farm to Market",
+      },
+      {
+        property: "og:description",
+        content:
+          "Agrolink connects farmers, buyers and transporters in one intelligent agricultural supply-chain network.",
+      },
+    ],
+  }),
   component: LandingPage,
 });
 
-function LandingPage() {
-  const { state, setRole, getTrust } = useApp();
+export function LandingPage() {
+  const { state } = useApp();
 
-  const sampleFarmerTrust = state.trust.find((t) => t.userId === "u-farmer-1") ?? state.trust[0];
-  const featuredProduce = state.produce.slice(0, 4);
+  // Selected sample profile for Section 4 (Trust)
+  const [selectedTrustRole, setSelectedTrustRole] = useState<"farmer" | "buyer" | "transporter">(
+    "farmer",
+  );
+
+  const farmerTrust: TrustProfile = state.trust.find((t) => t.userId === "u-farmer-1") ?? {
+    userId: "u-farmer-1",
+    score: 92,
+    level: "High Trust",
+    rating: 4.8,
+    completedTransactions: 48,
+    fulfilmentRate: 97,
+    successfulDeliveries: 47,
+    cancelledOrders: 2,
+    cancellationRate: 4,
+    verified: true,
+    history: [
+      { date: "2026-08-14", score: 92, reason: "On-time haulage completion" },
+      { date: "2026-08-01", score: 90, reason: "Verified farm gate inspection" },
+    ],
+  };
+
+  const buyerTrust: TrustProfile = state.trust.find((t) => t.userId === "u-buyer-1") ?? {
+    userId: "u-buyer-1",
+    score: 88,
+    level: "Trusted",
+    rating: 4.6,
+    completedTransactions: 36,
+    fulfilmentRate: 94,
+    successfulDeliveries: 35,
+    cancelledOrders: 2,
+    cancellationRate: 5,
+    verified: true,
+    history: [
+      { date: "2026-08-12", score: 88, reason: "Prompt delivery receipt confirmation" },
+      { date: "2026-07-28", score: 86, reason: "Direct escrow payment cleared" },
+    ],
+  };
+
+  const transporterTrust: TrustProfile = state.trust.find(
+    (t) => t.userId === "u-transporter-1",
+  ) ?? {
+    userId: "u-transporter-1",
+    score: 95,
+    level: "High Trust",
+    rating: 4.9,
+    completedTransactions: 62,
+    fulfilmentRate: 99,
+    successfulDeliveries: 61,
+    cancelledOrders: 1,
+    cancellationRate: 1,
+    verified: true,
+    history: [
+      { date: "2026-08-15", score: 95, reason: "Zero cargo loss across Kano-Lagos corridor" },
+      { date: "2026-08-05", score: 94, reason: "On-time arrival within 24h window" },
+    ],
+  };
+
+  const activeTrustProfile =
+    selectedTrustRole === "farmer"
+      ? farmerTrust
+      : selectedTrustRole === "buyer"
+        ? buyerTrust
+        : transporterTrust;
 
   return (
-    <div className="flex flex-col gap-16 pb-20 sm:gap-24">
-      {/* Hero Section */}
+    <div className="flex flex-col gap-20 pb-24 sm:gap-28">
+      {/* ========================================================================= */}
+      {/* SECTION 1 — HERO                                                          */}
+      {/* ========================================================================= */}
       <section className="relative overflow-hidden border-b border-border/70 bg-gradient-to-b from-primary/8 via-accent/5 to-background py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="grid items-center gap-10 lg:grid-cols-[1.2fr_1fr]">
+          <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_1fr]">
             <div className="space-y-6">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1 text-xs font-semibold text-primary">
+              {/* Eyebrow */}
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-primary">
                 <span className="size-2 rounded-full bg-primary animate-pulse" />
-                Thrive in Tech Hackathon MVP · Nigeria Digital Agri-Trade
+                Agricultural Supply-Chain Network
               </div>
 
-              <h1 className="font-display text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-balance">
-                Connecting agriculture through{" "}
+              {/* Headline */}
+              <h1 className="font-display text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl text-balance">
+                The trusted network moving food from{" "}
                 <span className="text-primary underline decoration-gold decoration-wavy decoration-2">
-                  trust
+                  farm to market
                 </span>
                 .
               </h1>
 
+              {/* Supporting Copy */}
               <p className="max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-                Agrolink eliminates middlemen risk by directly linking Nigerian farmers, commercial
-                buyers, and verified transporters through transparent ratings, guaranteed haulage,
-                and live market intelligence.
+                Agrolink connects farmers, buyers, and transporters in one intelligent network —
+                helping agricultural goods move faster, safer, and smarter.
               </p>
 
+              {/* CTAs */}
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <Button
                   asChild
                   size="lg"
-                  className="rounded-xl px-6 font-semibold shadow-[var(--shadow-lift)]"
+                  className="rounded-xl px-7 font-bold shadow-[var(--shadow-lift)]"
                 >
                   <Link to="/marketplace">
-                    Explore Marketplace
+                    Explore Agrolink
                     <ArrowRight className="ml-2 size-4" />
                   </Link>
                 </Button>
@@ -76,337 +167,425 @@ function LandingPage() {
                   size="lg"
                   className="rounded-xl px-6 font-semibold"
                 >
-                  <Link to="/auth">Select Demo Role</Link>
+                  <a href="#flow">See how it works</a>
                 </Button>
               </div>
 
-              {/* Hero KPI Bar */}
+              {/* Trust & Network Indicator Badges */}
               <div className="grid grid-cols-3 gap-4 border-t pt-6 sm:max-w-md">
                 <div>
-                  <p className="font-display text-2xl font-bold sm:text-3xl">97%</p>
+                  <p className="font-display text-2xl font-bold sm:text-3xl text-foreground">97%</p>
                   <p className="text-xs text-muted-foreground">Fulfilment Rate</p>
                 </div>
                 <div>
-                  <p className="font-display text-2xl font-bold sm:text-3xl">100%</p>
+                  <p className="font-display text-2xl font-bold sm:text-3xl text-foreground">
+                    100%
+                  </p>
                   <p className="text-xs text-muted-foreground">Verified Profiles</p>
                 </div>
                 <div>
-                  <p className="font-display text-2xl font-bold sm:text-3xl">₦0</p>
-                  <p className="text-xs text-muted-foreground">Upfront Commission</p>
+                  <p className="font-display text-2xl font-bold sm:text-3xl text-foreground">
+                    3-Way
+                  </p>
+                  <p className="text-xs text-muted-foreground">Trust Feedback</p>
                 </div>
               </div>
             </div>
 
-            {/* Hero Interactive Card Preview */}
-            <div className="relative">
-              <div className="absolute -inset-1 rounded-3xl bg-gradient-to-tr from-primary/30 via-gold/30 to-accent/30 opacity-70 blur-xl" />
-              <Card className="relative space-y-5 rounded-2xl border-border/80 bg-card/95 p-6 shadow-[var(--shadow-lift)] backdrop-blur">
-                <div className="flex items-center justify-between border-b pb-4">
-                  <div className="flex items-center gap-3">
-                    <span className="grid size-11 place-items-center rounded-xl bg-primary text-primary-foreground font-display font-bold">
-                      AF
-                    </span>
-                    <div>
-                      <h3 className="font-display text-lg font-bold">Abdul Farms</h3>
-                      <p className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <MapPin className="size-3 text-primary" /> Kano, Northern Region
-                      </p>
-                    </div>
-                  </div>
-                  {sampleFarmerTrust && <TrustScore trust={sampleFarmerTrust} size="md" />}
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>Active Listing Preview</span>
-                    <Badge variant="secondary" className="font-medium">
-                      Live Order Stream
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between rounded-xl bg-muted/60 p-3">
-                    <div className="flex items-center gap-3">
-                      <div className="size-10 rounded-lg bg-success/20 grid place-items-center text-success font-bold text-xs">
-                        RT
-                      </div>
-                      <div>
-                        <p className="font-semibold text-sm">Roma Tomatoes</p>
-                        <p className="text-xs text-muted-foreground">1,200kg available</p>
-                      </div>
-                    </div>
-                    <span className="font-display font-bold text-primary">
-                      ₦850<span className="text-xs font-normal text-muted-foreground">/kg</span>
-                    </span>
-                  </div>
-                </div>
-
-                <div className="rounded-xl border border-success/30 bg-success/10 p-3 text-xs text-foreground">
-                  <div className="flex items-center gap-1.5 font-semibold text-success">
-                    <ShieldCheck className="size-4 shrink-0" />
-                    Guaranteed Counterparty Protection
-                  </div>
-                  <p className="mt-1 text-muted-foreground leading-relaxed">
-                    SwiftHaul Logistics is currently hauling 300kg to FreshMart Lagos with full
-                    transit insurance.
-                  </p>
-                </div>
-              </Card>
+            {/* Hero Interactive 3D Visual (Lightweight SVG + Depth Nodes) */}
+            <div className="relative w-full">
+              <NetworkHero />
             </div>
           </div>
         </div>
       </section>
 
-      {/* 3 Pillars / Roles Section */}
+      {/* ========================================================================= */}
+      {/* SECTION 2 — THE PROBLEM                                                   */}
+      {/* ========================================================================= */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="text-center">
-          <Badge variant="secondary" className="mb-2 uppercase tracking-wider font-semibold">
-            One Unified Platform
+        <div className="text-center max-w-3xl mx-auto">
+          <Badge variant="outline" className="mb-3 uppercase tracking-wider font-bold text-primary">
+            The Supply-Chain Challenge
           </Badge>
-          <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl text-balance">
-            Empowering every stakeholder in agricultural trade
+          <h2 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl text-balance">
+            Food doesn't just need to be produced. It needs to move.
           </h2>
-          <p className="mx-auto mt-2 max-w-2xl text-muted-foreground text-sm sm:text-base">
-            Whether you grow produce, purchase commercial volume, or haul food across state lines,
-            Agrolink provides the tools and trust score to scale your business.
+          <p className="mt-3 text-muted-foreground text-sm sm:text-base leading-relaxed">
+            Agricultural supply chains suffer from poor trust, fragmented coordination, and
+            inefficient transit routes.
           </p>
         </div>
 
         <div className="mt-12 grid gap-6 md:grid-cols-3">
-          {/* Farmer Card */}
-          <Card className="flex flex-col justify-between gap-0 p-6 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)]">
-            <div className="space-y-4">
-              <span className="grid size-12 place-items-center rounded-2xl bg-success/15 text-success">
-                <Sprout className="size-6" />
-              </span>
-              <div>
-                <h3 className="font-display text-xl font-bold">For Farmers</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                  List your produce in kilograms with transparent prices. Receive immediate buyer
-                  orders, get automated transporter pickups, and build a verifiable credit/trust
-                  history.
-                </p>
-              </div>
-              <ul className="space-y-2 text-xs text-muted-foreground">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="size-3.5 text-success shrink-0" /> Instant produce
-                  listing & price guidance
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="size-3.5 text-success shrink-0" /> Automated hauler
-                  dispatch to your farm gate
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="size-3.5 text-success shrink-0" /> Fast payouts directly
-                  upon delivery confirmation
-                </li>
-              </ul>
-            </div>
-
-            <Button
-              asChild
-              className="mt-6 w-full"
-              variant="outline"
-              onClick={() => setRole("farmer")}
-            >
-              <Link to="/dashboard/farmer">
-                Demo as Farmer
-                <ArrowRight className="ml-1.5 size-4" />
-              </Link>
-            </Button>
+          {/* Farmers Problem Card */}
+          <Card className="p-6 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] border-t-4 border-t-success">
+            <span className="grid size-12 place-items-center rounded-2xl bg-success/15 text-success">
+              <Sprout className="size-6" />
+            </span>
+            <h3 className="mt-4 font-display text-xl font-bold text-foreground">Farmers</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              "Finding reliable buyers and transportation."
+            </p>
+            <p className="mt-4 text-xs text-muted-foreground leading-relaxed border-t pt-3">
+              Facing unpredictable farm gate prices, spoilage while waiting for haulage, and risk of
+              unverified buyers defaulting.
+            </p>
           </Card>
 
-          {/* Buyer Card */}
-          <Card className="flex flex-col justify-between gap-0 p-6 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] border-primary/40">
-            <div className="space-y-4">
-              <span className="grid size-12 place-items-center rounded-2xl bg-primary text-primary-foreground">
-                <ShoppingBasket className="size-6" />
-              </span>
-              <div>
-                <div className="flex items-center justify-between">
-                  <h3 className="font-display text-xl font-bold">For Buyers</h3>
-                  <Badge variant="default" className="text-[10px]">
-                    Popular
-                  </Badge>
-                </div>
-                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                  Source directly from high-trust Nigerian farmers without brokers. Compare prices,
-                  track your delivery in transit, and pay only for graded, delivered volume.
-                </p>
-              </div>
-              <ul className="space-y-2 text-xs text-muted-foreground">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="size-3.5 text-primary shrink-0" /> Transparent per-kg
-                  pricing & inventory
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="size-3.5 text-primary shrink-0" /> Comprehensive farmer
-                  trust breakdowns
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="size-3.5 text-primary shrink-0" /> Live GPS transit
-                  milestone updates
-                </li>
-              </ul>
-            </div>
-
-            <Button asChild className="mt-6 w-full" onClick={() => setRole("buyer")}>
-              <Link to="/dashboard/buyer">
-                Demo as Buyer
-                <ArrowRight className="ml-1.5 size-4" />
-              </Link>
-            </Button>
+          {/* Buyers Problem Card */}
+          <Card className="p-6 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] border-t-4 border-t-primary">
+            <span className="grid size-12 place-items-center rounded-2xl bg-primary/15 text-primary">
+              <ShoppingBasket className="size-6" />
+            </span>
+            <h3 className="mt-4 font-display text-xl font-bold text-foreground">Buyers</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              "Finding reliable suppliers and predictable fulfilment."
+            </p>
+            <p className="mt-4 text-xs text-muted-foreground leading-relaxed border-t pt-3">
+              Dealing with middlemen price gouging, uncertain produce quality grades, and blind
+              transit delays.
+            </p>
           </Card>
 
-          {/* Transporter Card */}
-          <Card className="flex flex-col justify-between gap-0 p-6 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)]">
-            <div className="space-y-4">
-              <span className="grid size-12 place-items-center rounded-2xl bg-gold/30 text-gold-foreground">
-                <Truck className="size-6" />
-              </span>
-              <div>
-                <h3 className="font-display text-xl font-bold">For Transporters</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                  Find guaranteed delivery jobs on major transit corridors. Eliminate empty return
-                  hauls, get clear pickup coordinates, and earn premium rates for urgent runs.
-                </p>
-              </div>
-              <ul className="space-y-2 text-xs text-muted-foreground">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="size-3.5 text-gold-foreground shrink-0" /> High-margin
-                  urgent and standard loads
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="size-3.5 text-gold-foreground shrink-0" /> Farm gate to
-                  warehouse routing
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="size-3.5 text-gold-foreground shrink-0" /> Reputation
-                  builds priority load access
-                </li>
-              </ul>
-            </div>
-
-            <Button
-              asChild
-              className="mt-6 w-full"
-              variant="outline"
-              onClick={() => setRole("transporter")}
-            >
-              <Link to="/dashboard/transporter">
-                Demo as Transporter
-                <ArrowRight className="ml-1.5 size-4" />
-              </Link>
-            </Button>
+          {/* Transporters Problem Card */}
+          <Card className="p-6 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] border-t-4 border-t-gold">
+            <span className="grid size-12 place-items-center rounded-2xl bg-gold/25 text-gold-foreground">
+              <Truck className="size-6" />
+            </span>
+            <h3 className="mt-4 font-display text-xl font-bold text-foreground">Transporters</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              "Finding profitable loads and avoiding empty trips."
+            </p>
+            <p className="mt-4 text-xs text-muted-foreground leading-relaxed border-t pt-3">
+              Lacking visibility on return hauls, resulting in deadhead miles, idle fleet capacity,
+              and delayed payments.
+            </p>
           </Card>
         </div>
       </section>
 
-      {/* Trust System Explainer Section */}
-      <section className="border-y border-border/70 bg-card/60 py-16 sm:py-20">
+      {/* ========================================================================= */}
+      {/* SECTION 3 — THE AGROLINK FLOW                                             */}
+      {/* ========================================================================= */}
+      <section id="flow" className="border-y border-border/70 bg-card/50 py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="grid items-center gap-12 lg:grid-cols-2">
-            <div className="space-y-6">
-              <Badge variant="outline" className="font-semibold text-primary">
-                The Core Differentiator
-              </Badge>
-              <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
-                A 360° Trust Rating System that cuts across every transaction
-              </h2>
-              <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-                In unorganized agriculture, trust is opaque. Agrolink establishes verifiable
-                reputation calculated across identity checks, fulfilled contract percentages,
-                on-time delivery rates, and mutual post-trade ratings.
-              </p>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-xl border bg-background p-4">
-                  <p className="font-semibold text-sm text-foreground">Multi-Party Evaluation</p>
-                  <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
-                    Buyers rate farmers on crop quality; farmers rate buyers on payment speed; both
-                    evaluate transporter timeliness.
-                  </p>
-                </div>
-                <div className="rounded-xl border bg-background p-4">
-                  <p className="font-semibold text-sm text-foreground">Anti-Fraud Protection</p>
-                  <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
-                    Automated flags for repeated cancellations or delayed handovers protect
-                    marketplace integrity.
-                  </p>
-                </div>
-              </div>
-
-              <Button asChild size="lg" className="rounded-xl font-semibold">
-                <Link to="/marketplace">Browse Verified Suppliers</Link>
-              </Button>
-            </div>
-
-            <div>
-              {sampleFarmerTrust && (
-                <Card className="gap-0 p-6 shadow-[var(--shadow-lift)]">
-                  <div className="flex items-center justify-between border-b pb-4">
-                    <div>
-                      <h3 className="font-display text-xl font-bold">Trust Metric Breakdown</h3>
-                      <p className="text-xs text-muted-foreground">Live composite rating engine</p>
-                    </div>
-                    <TrustScore trust={sampleFarmerTrust} size="md" />
-                  </div>
-                  <div className="pt-4">
-                    <TrustBreakdown trust={sampleFarmerTrust} />
-                  </div>
-                </Card>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Produce Showcase */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-          <div>
-            <Badge variant="secondary" className="mb-2 font-semibold">
-              Live Harvest
+          <div className="text-center max-w-2xl mx-auto">
+            <Badge variant="secondary" className="mb-2 font-bold uppercase tracking-wider">
+              The Complete Product Loop
             </Badge>
-            <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
-              Fresh produce available today
+            <h2 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+              One network. From harvest to delivery.
             </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Direct from verified farms in Kano, Jos, and Ibadan.
+            <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+              Every step is designed to keep agricultural trade transparent, coordinated, and
+              secure.
             </p>
           </div>
-          <Button asChild variant="outline">
-            <Link to="/marketplace">
-              View all {state.produce.length} listings
-              <ArrowRight className="ml-1.5 size-4" />
-            </Link>
-          </Button>
-        </div>
 
-        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {featuredProduce.map((p) => (
-            <ProduceCard key={p.id} item={p} />
-          ))}
+          {/* 6-Step Visual Loop */}
+          <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Step 1 */}
+            <Card className="relative p-5 shadow-[var(--shadow-card)] bg-card transition-all hover:shadow-[var(--shadow-lift)]">
+              <div className="flex items-center justify-between">
+                <span className="font-display text-2xl font-extrabold text-primary/40">01</span>
+                <span className="grid size-9 place-items-center rounded-xl bg-primary/10 text-primary">
+                  <Search className="size-4" />
+                </span>
+              </div>
+              <h3 className="mt-3 font-display text-lg font-bold text-foreground uppercase tracking-wide">
+                DISCOVER
+              </h3>
+              <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
+                Find available produce and haulage opportunities with live transparent pricing and
+                location coordinates.
+              </p>
+            </Card>
+
+            {/* Step 2 */}
+            <Card className="relative p-5 shadow-[var(--shadow-card)] bg-card transition-all hover:shadow-[var(--shadow-lift)]">
+              <div className="flex items-center justify-between">
+                <span className="font-display text-2xl font-extrabold text-success/50">02</span>
+                <span className="grid size-9 place-items-center rounded-xl bg-success/15 text-success">
+                  <ShieldCheck className="size-4" />
+                </span>
+              </div>
+              <h3 className="mt-3 font-display text-lg font-bold text-foreground uppercase tracking-wide">
+                VERIFY
+              </h3>
+              <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
+                Understand who you are transacting with through verified identity, fulfilment
+                history, and peer ratings.
+              </p>
+            </Card>
+
+            {/* Step 3 */}
+            <Card className="relative p-5 shadow-[var(--shadow-card)] bg-card transition-all hover:shadow-[var(--shadow-lift)]">
+              <div className="flex items-center justify-between">
+                <span className="font-display text-2xl font-extrabold text-accent/60">03</span>
+                <span className="grid size-9 place-items-center rounded-xl bg-accent/20 text-accent-foreground">
+                  <Layers className="size-4" />
+                </span>
+              </div>
+              <h3 className="mt-3 font-display text-lg font-bold text-foreground uppercase tracking-wide">
+                MATCH
+              </h3>
+              <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
+                Connect the right farmer, buyer and transporter into one direct, binding trade
+                contract.
+              </p>
+            </Card>
+
+            {/* Step 4 */}
+            <Card className="relative p-5 shadow-[var(--shadow-card)] bg-card transition-all hover:shadow-[var(--shadow-lift)]">
+              <div className="flex items-center justify-between">
+                <span className="font-display text-2xl font-extrabold text-gold/60">04</span>
+                <span className="grid size-9 place-items-center rounded-xl bg-gold/25 text-gold-foreground">
+                  <Truck className="size-4" />
+                </span>
+              </div>
+              <h3 className="mt-3 font-display text-lg font-bold text-foreground uppercase tracking-wide">
+                MOVE
+              </h3>
+              <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
+                Coordinate the farm gate pickup, load inspection, and route dispatch along major
+                interstate corridors.
+              </p>
+            </Card>
+
+            {/* Step 5 */}
+            <Card className="relative p-5 shadow-[var(--shadow-card)] bg-card transition-all hover:shadow-[var(--shadow-lift)]">
+              <div className="flex items-center justify-between">
+                <span className="font-display text-2xl font-extrabold text-primary/40">05</span>
+                <span className="grid size-9 place-items-center rounded-xl bg-primary/10 text-primary">
+                  <Compass className="size-4" />
+                </span>
+              </div>
+              <h3 className="mt-3 font-display text-lg font-bold text-foreground uppercase tracking-wide">
+                DELIVER
+              </h3>
+              <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
+                Track the shipment milestone by milestone and confirm quality handover at the
+                destination market.
+              </p>
+            </Card>
+
+            {/* Step 6 */}
+            <Card className="relative p-5 shadow-[var(--shadow-card)] bg-card transition-all hover:shadow-[var(--shadow-lift)] border-primary/40 bg-primary/5">
+              <div className="flex items-center justify-between">
+                <span className="font-display text-2xl font-extrabold text-success">06</span>
+                <span className="grid size-9 place-items-center rounded-xl bg-success text-success-foreground">
+                  <Check className="size-4" />
+                </span>
+              </div>
+              <h3 className="mt-3 font-display text-lg font-bold text-foreground uppercase tracking-wide">
+                BUILD TRUST
+              </h3>
+              <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
+                Mutual feedback and successful contract completion automatically strengthen each
+                participant's reputation.
+              </p>
+            </Card>
+          </div>
         </div>
       </section>
 
-      {/* AI Decision Engine Spotlight */}
+      {/* ========================================================================= */}
+      {/* SECTION 4 — TRUST (CORE DIFFERENTIATOR)                                  */}
+      {/* ========================================================================= */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6">
-        <Card className="relative overflow-hidden border-primary/30 bg-gradient-to-br from-primary/10 via-card to-background p-8 shadow-[var(--shadow-lift)] sm:p-12">
-          <div className="grid items-center gap-8 lg:grid-cols-[1.3fr_1fr]">
-            <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 rounded-full bg-gold/25 px-3 py-1 text-xs font-semibold text-gold-foreground">
-                <Sparkles className="size-3.5" />
-                Agrolink AI Decision Assistant
+        <div className="grid items-start gap-12 lg:grid-cols-[1.1fr_1fr]">
+          <div className="space-y-6">
+            <Badge variant="outline" className="font-bold text-primary">
+              The Trust System
+            </Badge>
+            <h2 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl text-balance">
+              Know who you're doing business with.
+            </h2>
+            <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
+              Every farmer, buyer and transporter builds a reputation through real marketplace
+              activity. Trust is not an admin badge — it is a live, cross-cutting score that lets
+              you evaluate counterparties before transacting.
+            </p>
+
+            {/* 3 Role Selection Cards */}
+            <div className="space-y-3 pt-2">
+              {/* Farmer Tab */}
+              <div
+                onClick={() => setSelectedTrustRole("farmer")}
+                className={`flex cursor-pointer items-center justify-between rounded-xl border p-4 transition-all ${
+                  selectedTrustRole === "farmer"
+                    ? "border-success bg-success/10 ring-2 ring-success/25"
+                    : "border-border bg-card hover:bg-muted/50"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <span className="grid size-10 place-items-center rounded-xl bg-success/20 text-success font-bold">
+                    AF
+                  </span>
+                  <div>
+                    <h4 className="font-display font-bold text-foreground">Abdul Farms (Farmer)</h4>
+                    <p className="text-xs text-muted-foreground">
+                      Kano · 48 completed transactions
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-display text-lg font-bold text-success">92</span>
+                  <Badge variant="secondary" className="text-[10px]">
+                    High Trust
+                  </Badge>
+                </div>
               </div>
-              <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
-                Actionable intelligence for pricing, vetting, and logistics
+
+              {/* Buyer Tab */}
+              <div
+                onClick={() => setSelectedTrustRole("buyer")}
+                className={`flex cursor-pointer items-center justify-between rounded-xl border p-4 transition-all ${
+                  selectedTrustRole === "buyer"
+                    ? "border-primary bg-primary/10 ring-2 ring-primary/25"
+                    : "border-border bg-card hover:bg-muted/50"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <span className="grid size-10 place-items-center rounded-xl bg-primary/20 text-primary font-bold">
+                    FM
+                  </span>
+                  <div>
+                    <h4 className="font-display font-bold text-foreground">
+                      FreshMart Retail (Buyer)
+                    </h4>
+                    <p className="text-xs text-muted-foreground">
+                      Lagos · 36 completed transactions
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-display text-lg font-bold text-primary">88</span>
+                  <Badge variant="secondary" className="text-[10px]">
+                    Trusted
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Transporter Tab */}
+              <div
+                onClick={() => setSelectedTrustRole("transporter")}
+                className={`flex cursor-pointer items-center justify-between rounded-xl border p-4 transition-all ${
+                  selectedTrustRole === "transporter"
+                    ? "border-gold bg-gold/15 ring-2 ring-gold/30"
+                    : "border-border bg-card hover:bg-muted/50"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <span className="grid size-10 place-items-center rounded-xl bg-gold/25 text-gold-foreground font-bold">
+                    SH
+                  </span>
+                  <div>
+                    <h4 className="font-display font-bold text-foreground">
+                      SwiftHaul Logistics (Transporter)
+                    </h4>
+                    <p className="text-xs text-muted-foreground">Abuja · 62 completed deliveries</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-display text-lg font-bold text-gold-foreground">95</span>
+                  <Badge variant="secondary" className="text-[10px]">
+                    High Trust
+                  </Badge>
+                </div>
+              </div>
+            </div>
+
+            <Button asChild size="lg" className="rounded-xl font-bold">
+              <Link to="/marketplace">
+                Explore Verified Network
+                <ArrowRight className="ml-2 size-4" />
+              </Link>
+            </Button>
+          </div>
+
+          {/* Interactive Trust Breakdown Inspector */}
+          <div>
+            <Card className="gap-0 p-6 shadow-[var(--shadow-lift)] border-border/90 bg-card">
+              <div className="flex items-center justify-between border-b pb-4">
+                <div>
+                  <h3 className="font-display text-xl font-bold">Real Reputation Breakdown</h3>
+                  <p className="text-xs text-muted-foreground">
+                    Calculated across identity, fulfilment, and mutual ratings
+                  </p>
+                </div>
+                <TrustScore trust={activeTrustProfile} size="md" />
+              </div>
+              <div className="pt-4">
+                <TrustBreakdown trust={activeTrustProfile} />
+              </div>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* SECTION 5 — LOGISTICS LAYER                                              */}
+      {/* ========================================================================= */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="text-center max-w-3xl mx-auto">
+          <Badge variant="secondary" className="mb-2 font-bold uppercase tracking-wider">
+            Integrated Freight & Haulage
+          </Badge>
+          <h2 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            Don't just find a buyer. Move the produce.
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground sm:text-base leading-relaxed">
+            Agrolink helps connect agricultural demand with transportation opportunities, reducing
+            friction and improving vehicle utilisation.
+          </p>
+
+          {/* Visual Step Indicator */}
+          <div className="mt-6 inline-flex flex-wrap items-center justify-center gap-2 rounded-2xl border bg-muted/60 px-4 py-2 text-xs font-semibold text-foreground">
+            <span className="flex items-center gap-1 text-success">
+              <MapPin className="size-3.5" /> Farmer Location
+            </span>
+            <span className="text-muted-foreground">→</span>
+            <span className="flex items-center gap-1 text-primary">
+              <CheckCircle2 className="size-3.5" /> Scheduled Pickup
+            </span>
+            <span className="text-muted-foreground">→</span>
+            <span className="flex items-center gap-1 text-gold-foreground">
+              <Truck className="size-3.5" /> Transporter Transit
+            </span>
+            <span className="text-muted-foreground">→</span>
+            <span className="flex items-center gap-1 text-accent-foreground">
+              <ShoppingBasket className="size-3.5" /> Buyer Delivery
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-10">
+          <AgroMap />
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* SECTION 6 — EMBEDDED AI DECISION LAYER                                   */}
+      {/* ========================================================================= */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6">
+        <Card className="relative overflow-hidden border-primary/30 bg-gradient-to-br from-primary/10 via-card to-background p-6 shadow-[var(--shadow-lift)] sm:p-10">
+          <div className="grid items-center gap-8 lg:grid-cols-[1.1fr_1fr]">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 rounded-full bg-gold/25 px-3 py-1 text-xs font-bold text-gold-foreground">
+                <Sparkles className="size-3.5" />
+                Agrolink Intelligence
+              </div>
+              <h2 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                Intelligence that helps every transaction move smarter.
               </h2>
               <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-                Our embedded AI evaluates live market supplies and regional demand. It tells farmers
-                when to adjust prices, helps buyers pick the safest supplier, and optimizes delivery
-                routes for haulers.
+                Turning live marketplace demand and freight availability into direct pricing,
+                vetting, and route suggestions.
               </p>
-              <div className="flex flex-wrap gap-3 pt-2">
-                <Button asChild size="lg" className="rounded-xl font-semibold">
+              <div className="pt-2">
+                <Button asChild size="lg" className="rounded-xl font-bold">
                   <Link to="/insights">
                     Try Agrolink AI
                     <ArrowRight className="ml-2 size-4" />
@@ -415,63 +594,127 @@ function LandingPage() {
               </div>
             </div>
 
-            <div className="space-y-3 rounded-xl border bg-card/90 p-5 shadow-xs">
-              <p className="text-xs font-semibold text-primary uppercase tracking-wide">
-                Recent AI Recommendation
-              </p>
-              <p className="text-sm font-semibold">
-                "Abdul Farms has the highest trust score (92) with 48 completed transactions and a
-                97% fulfilment rate."
-              </p>
-              <div className="rounded-lg bg-muted/60 p-3 text-xs text-muted-foreground">
-                <span className="font-semibold text-foreground">Suggested Action: </span>
-                Order Roma Tomatoes now and enable urgent delivery to ensure delivery before weekend
-                market rush.
+            {/* Realistic AI Chat UI Example */}
+            <div className="space-y-3 rounded-2xl border border-border/90 bg-card/95 p-5 shadow-sm">
+              <div className="flex items-center gap-2 border-b pb-3 text-xs font-semibold text-muted-foreground">
+                <span className="size-2 rounded-full bg-success animate-pulse" />
+                Live Decision Support
+              </div>
+
+              {/* User message */}
+              <div className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-sm bg-primary px-3.5 py-2 text-xs sm:text-sm text-primary-foreground">
+                "My tomatoes have been listed for five days. What should I do?"
+              </div>
+
+              {/* AI message */}
+              <div className="w-fit max-w-[92%] rounded-2xl rounded-bl-sm border bg-muted/40 p-3.5 text-xs sm:text-sm">
+                <p className="leading-relaxed text-foreground">
+                  Demand appears stronger in nearby markets. Consider adjusting the price slightly
+                  and prioritising delivery within the next 48 hours.
+                </p>
+                <div className="mt-3 flex items-center justify-between border-t pt-2.5">
+                  <span className="text-[11px] text-muted-foreground">Recommendation ready</span>
+                  <Button
+                    asChild
+                    size="sm"
+                    variant="secondary"
+                    className="rounded-lg text-xs font-bold"
+                  >
+                    <Link to="/insights">View recommendation</Link>
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         </Card>
       </section>
 
-      {/* Nationwide Logistics Map Preview */}
+      {/* ========================================================================= */}
+      {/* SECTION 7 — MEASURABLE IMPACT                                             */}
+      {/* ========================================================================= */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="text-center">
-          <Badge variant="secondary" className="mb-2 font-semibold">
-            Nationwide Coverage
+        <div className="text-center max-w-2xl mx-auto">
+          <Badge variant="outline" className="mb-2 font-bold uppercase tracking-wider text-primary">
+            Long-Term Value
           </Badge>
-          <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
-            Active trade corridors across Nigeria
+          <h2 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            Less friction. Less waste. Better economics.
           </h2>
-          <p className="mx-auto mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base">
-            Connecting northern grain and vegetable belts with southern processing and retail
-            markets.
+          <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+            Engineered to transform agricultural movement across Africa.
           </p>
         </div>
 
-        <div className="mt-8">
-          <AgroMap />
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <Card className="p-5 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)]">
+            <span className="grid size-10 place-items-center rounded-xl bg-success/15 text-success">
+              <Sprout className="size-5" />
+            </span>
+            <h3 className="mt-3 font-display text-base font-bold text-foreground">Market Access</h3>
+            <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+              Designed to improve direct buyer reach for regional producers without middleman
+              deductions.
+            </p>
+          </Card>
+
+          <Card className="p-5 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)]">
+            <span className="grid size-10 place-items-center rounded-xl bg-primary/15 text-primary">
+              <ShieldCheck className="size-5" />
+            </span>
+            <h3 className="mt-3 font-display text-base font-bold text-foreground">Trust</h3>
+            <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+              Designed to increase contract reliability through verified identities and 3-way
+              performance scores.
+            </p>
+          </Card>
+
+          <Card className="p-5 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)]">
+            <span className="grid size-10 place-items-center rounded-xl bg-gold/25 text-gold-foreground">
+              <Truck className="size-5" />
+            </span>
+            <h3 className="mt-3 font-display text-base font-bold text-foreground">
+              Transport Efficiency
+            </h3>
+            <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+              Designed to reduce empty return hauls and match loads with active interstate corridor
+              carriers.
+            </p>
+          </Card>
+
+          <Card className="p-5 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)]">
+            <span className="grid size-10 place-items-center rounded-xl bg-accent/20 text-accent-foreground">
+              <Zap className="size-5" />
+            </span>
+            <h3 className="mt-3 font-display text-base font-bold text-foreground">
+              Produce Movement
+            </h3>
+            <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+              Designed to reduce farm-to-table transit time and minimize post-harvest spoilage.
+            </p>
+          </Card>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="border-t border-border/70 bg-primary text-primary-foreground py-16 sm:py-20">
+      {/* ========================================================================= */}
+      {/* SECTION 8 — FINAL CALL TO ACTION                                          */}
+      {/* ========================================================================= */}
+      <section className="border-t border-border/70 bg-primary text-primary-foreground py-16 sm:py-24">
         <div className="mx-auto max-w-5xl px-4 text-center sm:px-6">
-          <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
-            Ready to experience frictionless agricultural trade?
+          <h2 className="font-display text-4xl font-extrabold tracking-tight sm:text-5xl">
+            Move food. Build trust. Reduce waste.
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-sm text-primary-foreground/80 sm:text-base leading-relaxed">
-            Jump directly into any of our simulated roles or browse available harvest lots on the
-            marketplace.
+          <p className="mx-auto mt-4 max-w-xl text-base text-primary-foreground/80 sm:text-lg leading-relaxed">
+            One network connecting the people who grow, buy and move Africa's food.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Button
               asChild
               size="lg"
               variant="secondary"
-              className="rounded-xl font-bold text-primary"
+              className="rounded-xl px-8 font-bold text-primary shadow-[var(--shadow-lift)]"
             >
-              <Link to="/auth">
-                Launch Role Dashboard
+              <Link to="/marketplace">
+                Explore Agrolink
                 <ArrowRight className="ml-2 size-4" />
               </Link>
             </Button>
@@ -480,7 +723,7 @@ function LandingPage() {
               size="lg"
               className="rounded-xl border border-primary-foreground/30 bg-primary-foreground/10 text-primary-foreground hover:bg-primary-foreground/20 font-semibold"
             >
-              <Link to="/marketplace">Browse Marketplace</Link>
+              <Link to="/auth">Choose Demo Role</Link>
             </Button>
           </div>
         </div>

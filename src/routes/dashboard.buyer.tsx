@@ -76,8 +76,8 @@ function BuyerDashboard() {
   return (
     <Page>
       <PageHeader
-        title={`Welcome back, ${buyer.name}`}
-        subtitle={`${buyer.location} · Corporate Buyer Account · 12 Retail Store Locations`}
+        title="My Agrolink Network"
+        subtitle={`${buyer.name} (${buyer.location}) · Discover trusted suppliers, track orders, and manage deliveries.`}
         actions={
           <Button asChild className="font-semibold shadow-xs">
             <Link to="/marketplace">

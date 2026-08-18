@@ -62,8 +62,8 @@ function TransporterDashboard() {
   return (
     <Page>
       <PageHeader
-        title={`Welcome back, ${transporter.name}`}
-        subtitle={`${transporter.location} · 9-Truck Fleet · Temperature-Controlled & Dry Freight`}
+        title="My Agrolink Network"
+        subtitle={`${transporter.name} (${transporter.location}) · Find delivery opportunities, track shipments, and grow your reputation.`}
         actions={
           <Badge
             variant="outline"
