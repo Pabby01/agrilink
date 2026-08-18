@@ -21,6 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { LiquidCard } from "@/components/ui/LiquidCard";
 import { TrustScore } from "@/components/trust/TrustScore";
 import { TrustBreakdown } from "@/components/trust/TrustBreakdown";
 import { AgroMap } from "@/components/map/AgroMap";
@@ -218,8 +219,11 @@ export function LandingPage() {
         </div>
 
         <div className="mt-12 grid gap-6 md:grid-cols-3">
-          {/* Farmers Problem Card */}
-          <Card className="p-6 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] border-t-4 border-t-success">
+          {/* Farmers Problem Card with Liquid Fill Feedback */}
+          <LiquidCard
+            variant="success"
+            className="p-6 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] border-t-4 border-t-success"
+          >
             <span className="grid size-12 place-items-center rounded-2xl bg-success/15 text-success">
               <Sprout className="size-6" />
             </span>
@@ -231,10 +235,13 @@ export function LandingPage() {
               Facing unpredictable farm gate prices, spoilage while waiting for haulage, and risk of
               unverified buyers defaulting.
             </p>
-          </Card>
+          </LiquidCard>
 
-          {/* Buyers Problem Card */}
-          <Card className="p-6 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] border-t-4 border-t-primary">
+          {/* Buyers Problem Card with Liquid Fill Feedback */}
+          <LiquidCard
+            variant="primary"
+            className="p-6 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] border-t-4 border-t-primary"
+          >
             <span className="grid size-12 place-items-center rounded-2xl bg-primary/15 text-primary">
               <ShoppingBasket className="size-6" />
             </span>
@@ -246,10 +253,13 @@ export function LandingPage() {
               Dealing with middlemen price gouging, uncertain produce quality grades, and blind
               transit delays.
             </p>
-          </Card>
+          </LiquidCard>
 
-          {/* Transporters Problem Card */}
-          <Card className="p-6 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] border-t-4 border-t-gold">
+          {/* Transporters Problem Card with Liquid Fill Feedback */}
+          <LiquidCard
+            variant="gold"
+            className="p-6 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] border-t-4 border-t-gold"
+          >
             <span className="grid size-12 place-items-center rounded-2xl bg-gold/25 text-gold-foreground">
               <Truck className="size-6" />
             </span>
@@ -261,12 +271,12 @@ export function LandingPage() {
               Lacking visibility on return hauls, resulting in deadhead miles, idle fleet capacity,
               and delayed payments.
             </p>
-          </Card>
+          </LiquidCard>
         </div>
       </section>
 
       {/* ========================================================================= */}
-      {/* SECTION 3 — THE AGROLINK FLOW                                             */}
+      {/* SECTION 3 — THE AGROLINK FLOW (WITH WATER-POURING CARDS)                  */}
       {/* ========================================================================= */}
       <section id="flow" className="border-y border-border/70 bg-card/50 py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
@@ -279,16 +289,19 @@ export function LandingPage() {
             </h2>
             <p className="mt-2 text-sm text-muted-foreground sm:text-base">
               Every step is designed to keep agricultural trade transparent, coordinated, and
-              secure.
+              secure. Tap or hover over any step.
             </p>
           </div>
 
-          {/* 6-Step Visual Loop */}
+          {/* 6-Step Visual Loop with Liquid Pouring Feedback */}
           <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {/* Step 1 */}
-            <Card className="relative p-5 shadow-[var(--shadow-card)] bg-card transition-all hover:shadow-[var(--shadow-lift)]">
+            <LiquidCard
+              variant="primary"
+              className="p-5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-lift)] cursor-pointer"
+            >
               <div className="flex items-center justify-between">
-                <span className="font-display text-2xl font-extrabold text-primary/40">01</span>
+                <span className="font-display text-2xl font-extrabold text-primary/50">01</span>
                 <span className="grid size-9 place-items-center rounded-xl bg-primary/10 text-primary">
                   <Search className="size-4" />
                 </span>
@@ -300,13 +313,16 @@ export function LandingPage() {
                 Find available produce and haulage opportunities with live transparent pricing and
                 location coordinates.
               </p>
-            </Card>
+            </LiquidCard>
 
             {/* Step 2 */}
-            <Card className="relative p-5 shadow-[var(--shadow-card)] bg-card transition-all hover:shadow-[var(--shadow-lift)]">
+            <LiquidCard
+              variant="emerald"
+              className="p-5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-lift)] cursor-pointer"
+            >
               <div className="flex items-center justify-between">
-                <span className="font-display text-2xl font-extrabold text-success/50">02</span>
-                <span className="grid size-9 place-items-center rounded-xl bg-success/15 text-success">
+                <span className="font-display text-2xl font-extrabold text-emerald-600/60">02</span>
+                <span className="grid size-9 place-items-center rounded-xl bg-emerald-500/15 text-emerald-600">
                   <ShieldCheck className="size-4" />
                 </span>
               </div>
@@ -317,12 +333,15 @@ export function LandingPage() {
                 Understand who you are transacting with through verified identity, fulfilment
                 history, and peer ratings.
               </p>
-            </Card>
+            </LiquidCard>
 
             {/* Step 3 */}
-            <Card className="relative p-5 shadow-[var(--shadow-card)] bg-card transition-all hover:shadow-[var(--shadow-lift)]">
+            <LiquidCard
+              variant="accent"
+              className="p-5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-lift)] cursor-pointer"
+            >
               <div className="flex items-center justify-between">
-                <span className="font-display text-2xl font-extrabold text-accent/60">03</span>
+                <span className="font-display text-2xl font-extrabold text-accent/70">03</span>
                 <span className="grid size-9 place-items-center rounded-xl bg-accent/20 text-accent-foreground">
                   <Layers className="size-4" />
                 </span>
@@ -334,12 +353,15 @@ export function LandingPage() {
                 Connect the right farmer, buyer and transporter into one direct, binding trade
                 contract.
               </p>
-            </Card>
+            </LiquidCard>
 
             {/* Step 4 */}
-            <Card className="relative p-5 shadow-[var(--shadow-card)] bg-card transition-all hover:shadow-[var(--shadow-lift)]">
+            <LiquidCard
+              variant="gold"
+              className="p-5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-lift)] cursor-pointer"
+            >
               <div className="flex items-center justify-between">
-                <span className="font-display text-2xl font-extrabold text-gold/60">04</span>
+                <span className="font-display text-2xl font-extrabold text-gold/70">04</span>
                 <span className="grid size-9 place-items-center rounded-xl bg-gold/25 text-gold-foreground">
                   <Truck className="size-4" />
                 </span>
@@ -351,13 +373,16 @@ export function LandingPage() {
                 Coordinate the farm gate pickup, load inspection, and route dispatch along major
                 interstate corridors.
               </p>
-            </Card>
+            </LiquidCard>
 
             {/* Step 5 */}
-            <Card className="relative p-5 shadow-[var(--shadow-card)] bg-card transition-all hover:shadow-[var(--shadow-lift)]">
+            <LiquidCard
+              variant="blue"
+              className="p-5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-lift)] cursor-pointer"
+            >
               <div className="flex items-center justify-between">
-                <span className="font-display text-2xl font-extrabold text-primary/40">05</span>
-                <span className="grid size-9 place-items-center rounded-xl bg-primary/10 text-primary">
+                <span className="font-display text-2xl font-extrabold text-blue-500/50">05</span>
+                <span className="grid size-9 place-items-center rounded-xl bg-blue-500/15 text-blue-600">
                   <Compass className="size-4" />
                 </span>
               </div>
@@ -368,10 +393,13 @@ export function LandingPage() {
                 Track the shipment milestone by milestone and confirm quality handover at the
                 destination market.
               </p>
-            </Card>
+            </LiquidCard>
 
             {/* Step 6 */}
-            <Card className="relative p-5 shadow-[var(--shadow-card)] bg-card transition-all hover:shadow-[var(--shadow-lift)] border-primary/40 bg-primary/5">
+            <LiquidCard
+              variant="success"
+              className="p-5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-lift)] border-success/40 bg-success/5 cursor-pointer"
+            >
               <div className="flex items-center justify-between">
                 <span className="font-display text-2xl font-extrabold text-success">06</span>
                 <span className="grid size-9 place-items-center rounded-xl bg-success text-success-foreground">
@@ -385,7 +413,7 @@ export function LandingPage() {
                 Mutual feedback and successful contract completion automatically strengthen each
                 participant's reputation.
               </p>
-            </Card>
+            </LiquidCard>
           </div>
         </div>
       </section>
@@ -526,18 +554,18 @@ export function LandingPage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* SECTION 5 — LOGISTICS LAYER                                              */}
+      {/* SECTION 5 — LOGISTICS LAYER WITH REAL MAP & MOVING VEHICLES (UBER STYLE) */}
       {/* ========================================================================= */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="text-center max-w-3xl mx-auto">
           <Badge variant="secondary" className="mb-2 font-bold uppercase tracking-wider">
-            Integrated Freight & Haulage
+            Live Moving Logistics Layer
           </Badge>
           <h2 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             Don't just find a buyer. Move the produce.
           </h2>
           <p className="mt-2 text-sm text-muted-foreground sm:text-base leading-relaxed">
-            Agrolink helps connect agricultural demand with transportation opportunities, reducing
+            Agrolink connects agricultural demand with live transportation opportunities, reducing
             friction and improving vehicle utilisation.
           </p>
 
@@ -561,6 +589,7 @@ export function LandingPage() {
           </div>
         </div>
 
+        {/* Real Interactive Map with Live Moving Cars, Trucks, and Bikes */}
         <div className="mt-10">
           <AgroMap />
         </div>
@@ -630,7 +659,7 @@ export function LandingPage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* SECTION 7 — MEASURABLE IMPACT                                             */}
+      {/* SECTION 7 — MEASURABLE IMPACT (WITH LIQUID CARDS)                         */}
       {/* ========================================================================= */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="text-center max-w-2xl mx-auto">
@@ -641,12 +670,15 @@ export function LandingPage() {
             Less friction. Less waste. Better economics.
           </h2>
           <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-            Engineered to transform agricultural movement across Africa.
+            Engineered to transform agricultural movement across Africa. Tap any pillar below.
           </p>
         </div>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          <Card className="p-5 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)]">
+          <LiquidCard
+            variant="success"
+            className="p-5 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] cursor-pointer"
+          >
             <span className="grid size-10 place-items-center rounded-xl bg-success/15 text-success">
               <Sprout className="size-5" />
             </span>
@@ -655,9 +687,12 @@ export function LandingPage() {
               Designed to improve direct buyer reach for regional producers without middleman
               deductions.
             </p>
-          </Card>
+          </LiquidCard>
 
-          <Card className="p-5 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)]">
+          <LiquidCard
+            variant="primary"
+            className="p-5 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] cursor-pointer"
+          >
             <span className="grid size-10 place-items-center rounded-xl bg-primary/15 text-primary">
               <ShieldCheck className="size-5" />
             </span>
@@ -666,9 +701,12 @@ export function LandingPage() {
               Designed to increase contract reliability through verified identities and 3-way
               performance scores.
             </p>
-          </Card>
+          </LiquidCard>
 
-          <Card className="p-5 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)]">
+          <LiquidCard
+            variant="gold"
+            className="p-5 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] cursor-pointer"
+          >
             <span className="grid size-10 place-items-center rounded-xl bg-gold/25 text-gold-foreground">
               <Truck className="size-5" />
             </span>
@@ -679,9 +717,12 @@ export function LandingPage() {
               Designed to reduce empty return hauls and match loads with active interstate corridor
               carriers.
             </p>
-          </Card>
+          </LiquidCard>
 
-          <Card className="p-5 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)]">
+          <LiquidCard
+            variant="accent"
+            className="p-5 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-lift)] cursor-pointer"
+          >
             <span className="grid size-10 place-items-center rounded-xl bg-accent/20 text-accent-foreground">
               <Zap className="size-5" />
             </span>
@@ -691,7 +732,7 @@ export function LandingPage() {
             <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
               Designed to reduce farm-to-table transit time and minimize post-harvest spoilage.
             </p>
-          </Card>
+          </LiquidCard>
         </div>
       </section>
 

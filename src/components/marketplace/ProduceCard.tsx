@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { MapPin, ArrowRight } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { LiquidCard } from "@/components/ui/LiquidCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TrustScore } from "@/components/trust/TrustScore";
@@ -14,7 +14,12 @@ export function ProduceCard({ item }: { item: Produce }) {
   const trust = getTrust(item.farmerId);
 
   return (
-    <Card className="group flex flex-col gap-0 overflow-hidden p-0 shadow-[var(--shadow-card)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)]">
+    <LiquidCard
+      variant={
+        item.category === "Vegetables" ? "success" : item.category === "Grains" ? "gold" : "primary"
+      }
+      className="flex flex-col gap-0 p-0 shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-lift)]"
+    >
       <div className="relative overflow-hidden">
         <ProduceImage
           name={item.name}
@@ -23,7 +28,7 @@ export function ProduceCard({ item }: { item: Produce }) {
           className="h-44 w-full"
         />
         {!item.available && (
-          <div className="absolute inset-0 grid place-items-center bg-background/70 backdrop-blur-xs">
+          <div className="absolute inset-0 grid place-items-center bg-background/75 backdrop-blur-xs">
             <Badge variant="destructive" className="font-semibold">
               Sold Out / Unavailable
             </Badge>
@@ -65,7 +70,12 @@ export function ProduceCard({ item }: { item: Produce }) {
               </Link>
               {trust && <TrustScore trust={trust} size="sm" showLabel={false} />}
             </div>
-            <Button asChild size="sm" variant={item.available ? "default" : "outline"}>
+            <Button
+              asChild
+              size="sm"
+              variant={item.available ? "default" : "outline"}
+              className="rounded-lg font-semibold"
+            >
               <Link to="/marketplace/$produceId" params={{ produceId: item.id }}>
                 {item.available ? "Order" : "Details"}
                 <ArrowRight className="ml-1 size-3.5" />
@@ -74,6 +84,6 @@ export function ProduceCard({ item }: { item: Produce }) {
           </div>
         </div>
       </div>
-    </Card>
+    </LiquidCard>
   );
 }
