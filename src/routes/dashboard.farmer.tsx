@@ -2,6 +2,8 @@ import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
+import { KYBVerificationModal } from "@/components/kyb/KYBVerificationModal";
+import { ProduceUploadModal } from "@/components/marketplace/ProduceUploadModal";
 import {
   Sprout,
   Plus,
@@ -113,110 +115,13 @@ function FarmerDashboard() {
         title="My Agrolink Network"
         subtitle={`${farmer.name} (${farmer.location}) · Manage produce listings, track buyer orders, and build your reputation.`}
         actions={
-          <Dialog open={openNewListing} onOpenChange={setOpenNewListing}>
-            <DialogTrigger asChild>
-              <Button className="font-semibold shadow-xs">
-                <Plus className="mr-1.5 size-4" />
-                Add New Produce Listing
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle className="font-display text-xl">Create Produce Listing</DialogTitle>
-                <DialogDescription>
-                  List fresh harvest on the marketplace. Buyers and haulers can order immediately.
-                </DialogDescription>
-              </DialogHeader>
-
-              <form onSubmit={handleCreateListing} className="space-y-4 pt-2">
-                <div className="space-y-1.5">
-                  <Label htmlFor="produceName">Produce Name *</Label>
-                  <Input
-                    id="produceName"
-                    placeholder="e.g. Roma Tomatoes, Yellow Maize"
-                    value={newName}
-                    onChange={(e) => setNewName(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label>Category *</Label>
-                    <Select
-                      value={newCategory}
-                      onValueChange={(v) => setNewCategory(v as ProduceCategory)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Vegetables">Vegetables</SelectItem>
-                        <SelectItem value="Grains">Grains</SelectItem>
-                        <SelectItem value="Tubers">Tubers</SelectItem>
-                        <SelectItem value="Fruits">Fruits</SelectItem>
-                        <SelectItem value="Legumes">Legumes</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="qty">Quantity (kg) *</Label>
-                    <Input
-                      id="qty"
-                      type="number"
-                      placeholder="e.g. 1000"
-                      min="10"
-                      value={newQty}
-                      onChange={(e) => setNewQty(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="price">Price per kg (₦) *</Label>
-                    <Input
-                      id="price"
-                      type="number"
-                      placeholder="e.g. 850"
-                      min="50"
-                      value={newPrice}
-                      onChange={(e) => setNewPrice(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="loc">Farm Location *</Label>
-                    <Input
-                      id="loc"
-                      value={newLocation}
-                      onChange={(e) => setNewLocation(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label htmlFor="desc">Description & Quality Notes</Label>
-                  <Textarea
-                    id="desc"
-                    placeholder="Describe harvest date, grading, packaging (e.g. 50kg bags)..."
-                    rows={3}
-                    value={newDesc}
-                    onChange={(e) => setNewDesc(e.target.value)}
-                  />
-                </div>
-
-                <div className="flex justify-end gap-2 pt-2">
-                  <Button type="button" variant="outline" onClick={() => setOpenNewListing(false)}>
-                    Cancel
-                  </Button>
-                  <Button type="submit">Publish to Marketplace</Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
+          <div className="flex flex-wrap items-center gap-2">
+            <KYBVerificationModal
+              currentTier={farmer.role === "farmer" ? 2 : 1}
+              isVerified={true}
+            />
+            <ProduceUploadModal />
+          </div>
         }
       />
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
+import { KYBVerificationModal } from "@/components/kyb/KYBVerificationModal";
 import {
   ShoppingBasket,
   Truck,
@@ -81,12 +82,15 @@ function BuyerDashboard() {
         title="My Agrolink Network"
         subtitle={`${buyer.name} (${buyer.location}) · Discover trusted suppliers, track orders, and manage deliveries.`}
         actions={
-          <Button asChild className="font-semibold shadow-xs">
-            <Link to="/marketplace">
-              <ShoppingBasket className="mr-1.5 size-4" />
-              Browse Marketplace
-            </Link>
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <KYBVerificationModal currentTier={buyer.role === "buyer" ? 2 : 1} isVerified={true} />
+            <Button asChild className="font-semibold shadow-xs">
+              <Link to="/marketplace">
+                <ShoppingBasket className="mr-1.5 size-4" />
+                Browse Marketplace
+              </Link>
+            </Button>
+          </div>
         }
       />
 

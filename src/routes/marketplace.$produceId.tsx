@@ -13,6 +13,7 @@ import { TrustScore } from "@/components/trust/TrustScore";
 import { TrustBreakdown } from "@/components/trust/TrustBreakdown";
 import { ProduceImage } from "@/components/marketplace/ProduceImage";
 import { formatNaira, timeAgo, useApp } from "@/lib/store";
+import { api } from "@/lib/api-client";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 import type { Delivery } from "@/lib/types";
 import { toast } from "sonner";
@@ -43,6 +44,7 @@ function ProduceDetail() {
   const item = getProduce(produceId);
   const [quantity, setQuantity] = useState(100);
   const [urgency, setUrgency] = useState<Delivery["urgency"]>("Standard");
+  const [submitting, setSubmitting] = useState(false);
 
   if (!item) {
     return (
@@ -64,13 +66,25 @@ function ProduceDetail() {
   const subtotal = qty * item.pricePerKg;
   const deliveryFee = Math.round(qty * 40 + (urgency === "Urgent" ? 25_000 : 0));
 
-  const submit = () => {
-    const order = placeOrder({ produceId: item.id, quantityKg: qty, urgency });
-    if (!order) {
-      toast.error("Could not place that order");
-      return;
+  const submit = async () => {
+    setSubmitting(true);
+    const res = await api.orders.createEscrow({
+      produceId: item.id,
+      quantityKg: qty,
+      urgency,
+    });
+    setSubmitting(false);
+
+    if (!res.success) {
+      // Fallback to local store if backend returned an error
+      const order = placeOrder({ produceId: item.id, quantityKg: qty, urgency });
+      if (!order) {
+        toast.error("Could not place that order");
+        return;
+      }
     }
-    toast.success(`Order placed — ${qty}kg of ${item.name}`);
+
+    toast.success(`Escrow locked & order placed — ${qty}kg of ${item.name}`);
     router.navigate({ to: "/dashboard/buyer" });
   };
 

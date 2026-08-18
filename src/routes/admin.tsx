@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
+import { KYBAdminReviewTable } from "@/components/kyb/KYBAdminReviewTable";
 import {
   ShieldAlert,
   ShieldCheck,
@@ -153,6 +154,11 @@ function AdminDashboard() {
           </div>
         </div>
         <AgroMap />
+      </div>
+
+      {/* KYB / KYC Compliance Queue */}
+      <div className="mt-10">
+        <KYBAdminReviewTable />
       </div>
 
       {/* User Directory & Trust Table */}

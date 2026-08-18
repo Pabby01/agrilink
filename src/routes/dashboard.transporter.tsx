@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
+import { KYBVerificationModal } from "@/components/kyb/KYBVerificationModal";
 import {
   Truck,
   MapPin,
@@ -67,13 +68,19 @@ function TransporterDashboard() {
         title="My Agrolink Network"
         subtitle={`${transporter.name} (${transporter.location}) · Find delivery opportunities, track shipments, and grow your reputation.`}
         actions={
-          <Badge
-            variant="outline"
-            className="text-success border-success/40 bg-success/10 py-1.5 px-3"
-          >
-            <span className="mr-1.5 size-2 rounded-full bg-success animate-pulse" />
-            Fleet Status: Online & Available
-          </Badge>
+          <div className="flex flex-wrap items-center gap-2">
+            <KYBVerificationModal
+              currentTier={transporter.role === "transporter" ? 3 : 1}
+              isVerified={true}
+            />
+            <Badge
+              variant="outline"
+              className="text-success border-success/40 bg-success/10 py-1.5 px-3"
+            >
+              <span className="mr-1.5 size-2 rounded-full bg-success animate-pulse" />
+              Fleet Status: Online & Available
+            </Badge>
+          </div>
         }
       />
 
