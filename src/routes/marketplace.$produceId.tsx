@@ -84,7 +84,12 @@ function ProduceDetail() {
       <div className="mt-4 grid gap-6 lg:grid-cols-[1.6fr_1fr]">
         <div className="space-y-6">
           <Card className="gap-0 overflow-hidden p-0 shadow-[var(--shadow-card)]">
-            <ProduceImage name={item.name} category={item.category} className="h-56 w-full" />
+            <ProduceImage
+              name={item.name}
+              category={item.category}
+              src={item.image}
+              className="h-64 w-full"
+            />
             <div className="p-5">
               <h1 className="font-display text-3xl font-bold tracking-tight">{item.name}</h1>
               <p className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
@@ -92,8 +97,8 @@ function ProduceDetail() {
                   <MapPin className="size-3.5" aria-hidden /> {item.location}
                 </span>
                 <span className="flex items-center gap-1">
-                  <Package className="size-3.5" aria-hidden />{" "}
-                  {item.quantityKg.toLocaleString()}kg available
+                  <Package className="size-3.5" aria-hidden /> {item.quantityKg.toLocaleString()}kg
+                  available
                 </span>
                 <span>Listed {timeAgo(item.listedAt)}</span>
               </p>
@@ -143,7 +148,9 @@ function ProduceDetail() {
                 value={quantity}
                 onChange={(e) => setQuantity(Number(e.target.value))}
               />
-              <p className="text-xs text-muted-foreground">Maximum {item.quantityKg.toLocaleString()}kg</p>
+              <p className="text-xs text-muted-foreground">
+                Maximum {item.quantityKg.toLocaleString()}kg
+              </p>
             </div>
 
             <div className="space-y-2">

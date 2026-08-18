@@ -9,7 +9,11 @@ export const trustTone = (score: number) =>
       ? { text: "text-primary", ring: "border-primary/40", chip: "bg-primary/10 text-primary" }
       : score >= 50
         ? { text: "text-warning", ring: "border-warning/50", chip: "bg-warning/15 text-warning" }
-        : { text: "text-destructive", ring: "border-destructive/50", chip: "bg-destructive/12 text-destructive" };
+        : {
+            text: "text-destructive",
+            ring: "border-destructive/50",
+            chip: "bg-destructive/12 text-destructive",
+          };
 
 interface Props {
   trust: TrustProfile;
@@ -50,7 +54,13 @@ export function TrustScore({ trust, size = "md", showLabel = true, className }: 
         role="img"
         aria-label={`Trust score ${trust.score} out of 100, ${trust.level}`}
       >
-        <span className={cn("font-display font-bold leading-none", tone.text, size === "lg" ? "text-3xl" : "text-xl")}>
+        <span
+          className={cn(
+            "font-display font-bold leading-none",
+            tone.text,
+            size === "lg" ? "text-3xl" : "text-xl",
+          )}
+        >
           {trust.score}
         </span>
         <span className="text-[9px] uppercase tracking-widest text-muted-foreground">trust</span>

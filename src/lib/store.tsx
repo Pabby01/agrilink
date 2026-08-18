@@ -69,7 +69,11 @@ interface Ctx {
   getProduce: (id: string) => Produce | undefined;
   createListing: (input: Omit<Produce, "id" | "listedAt" | "farmerId" | "available">) => Produce;
   toggleListing: (produceId: string) => void;
-  placeOrder: (input: { produceId: string; quantityKg: number; urgency: Delivery["urgency"] }) => Order | null;
+  placeOrder: (input: {
+    produceId: string;
+    quantityKg: number;
+    urgency: Delivery["urgency"];
+  }) => Order | null;
   setOrderStatus: (orderId: string, status: OrderStatus) => void;
   acceptDelivery: (deliveryId: string) => void;
   setDeliveryStatus: (deliveryId: string, status: DeliveryStatus) => void;
@@ -284,7 +288,12 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
             `SwiftHaul Logistics accepted the delivery for order ${order.id}.`,
             "success",
           );
-          n = notify(n, order.farmerId, "Transporter assigned", `A transporter is en route to pick up ${order.id}.`);
+          n = notify(
+            n,
+            order.farmerId,
+            "Transporter assigned",
+            `A transporter is en route to pick up ${order.id}.`,
+          );
         }
         return {
           ...s,
@@ -315,8 +324,20 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
         const order = s.orders.find((o) => o.id === delivery.orderId);
         let n = s.notifications;
         if (order && status === "Delivered") {
-          n = notify(n, order.buyerId, "Your order has been delivered", `Order ${order.id} arrived. Confirm to complete.`, "success");
-          n = notify(n, order.farmerId, "Delivery completed", `Order ${order.id} was delivered successfully.`, "success");
+          n = notify(
+            n,
+            order.buyerId,
+            "Your order has been delivered",
+            `Order ${order.id} arrived. Confirm to complete.`,
+            "success",
+          );
+          n = notify(
+            n,
+            order.farmerId,
+            "Delivery completed",
+            `Order ${order.id} was delivered successfully.`,
+            "success",
+          );
         }
         return {
           ...s,
@@ -336,8 +357,13 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
         const trust = s.trust.map((t) => {
           if (t.userId !== targetUserId) return t;
           const completed = t.completedTransactions + 1;
-          const newRating = Number(((t.rating * t.completedTransactions + rating) / completed).toFixed(2));
-          const score = Math.max(0, Math.min(100, Math.round(t.score + (rating >= 4 ? 2 : rating >= 3 ? 0 : -4))));
+          const newRating = Number(
+            ((t.rating * t.completedTransactions + rating) / completed).toFixed(2),
+          );
+          const score = Math.max(
+            0,
+            Math.min(100, Math.round(t.score + (rating >= 4 ? 2 : rating >= 3 ? 0 : -4))),
+          );
           return {
             ...t,
             completedTransactions: completed,

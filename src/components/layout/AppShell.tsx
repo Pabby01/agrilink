@@ -40,12 +40,16 @@ function navFor(role: Role | null) {
     { to: roleHome[role], label: "Dashboard" },
     ...base,
     { to: "/insights", label: "Agrolink AI" },
-    { to: `/profile/${{ farmer: "u-farmer-1", buyer: "u-buyer-1", transporter: "u-transporter-1", admin: "u-admin-1" }[role]}`, label: "Profile" },
+    {
+      to: `/profile/${{ farmer: "u-farmer-1", buyer: "u-buyer-1", transporter: "u-transporter-1", admin: "u-admin-1" }[role]}`,
+      label: "Profile",
+    },
   ];
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { role, setRole, currentUser, notificationsFor, markNotificationsRead, resetDemo } = useApp();
+  const { role, setRole, currentUser, notificationsFor, markNotificationsRead, resetDemo } =
+    useApp();
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
@@ -87,7 +91,12 @@ export function AppShell({ children }: { children: ReactNode }) {
             {role && (
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="ghost" size="icon" className="relative" aria-label="Notifications">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative"
+                    aria-label="Notifications"
+                  >
                     <Bell className="size-4" />
                     {unread > 0 && (
                       <span className="absolute right-1.5 top-1.5 grid size-4 place-items-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
@@ -118,7 +127,10 @@ export function AppShell({ children }: { children: ReactNode }) {
                     {notifications.slice(0, 12).map((n) => (
                       <li
                         key={n.id}
-                        className={cn("border-b px-3 py-2.5 last:border-0", !n.read && "bg-muted/50")}
+                        className={cn(
+                          "border-b px-3 py-2.5 last:border-0",
+                          !n.read && "bg-muted/50",
+                        )}
                       >
                         <div className="flex items-start justify-between gap-2">
                           <p className="text-sm font-medium">{n.title}</p>
@@ -140,7 +152,9 @@ export function AppShell({ children }: { children: ReactNode }) {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm" className="hidden sm:inline-flex">
-                    <Badge variant="secondary" className="mr-1.5">{roleLabel[role]}</Badge>
+                    <Badge variant="secondary" className="mr-1.5">
+                      {roleLabel[role]}
+                    </Badge>
                     {currentUser?.name}
                   </Button>
                 </DropdownMenuTrigger>

@@ -1,4 +1,4 @@
-# AgriLink 
+# AgriLink
 
 You are a senior full-stack engineer and hackathon product builder.
 
@@ -878,23 +878,49 @@ Do not stop at generating the UI.
 
 BUILD THE FUNCTIONAL MVP.
 
-This project was built with [Lovable](https://lovable.dev).
+==================================================
 
-## Build with Lovable
+19. DEVELOPER GUIDE & DEMO INSTRUCTIONS
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/b80a4513-7c92-4ab1-b417-49493896a823).
+==================================================
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+### Local Development Setup
 
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+Prerequisites: Node.js 18+ and npm.
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+npm install
 npm run dev
 ```
+
+The application will launch on `http://localhost:8080`.
+
+### Production Build
+
+```sh
+npm run build
+npm run preview
+```
+
+### Seeded Demo Accounts
+
+You can switch between any of these accounts instantly using the role switcher in the top navigation bar or visiting `/auth`:
+
+1. **Farmer**: `Abdul Farms` (Kano, Northern Region) — Trust Score 92.
+2. **Buyer**: `FreshMart Retail` (Lagos, Commercial Hub) — Trust Score 88.
+3. **Transporter**: `SwiftHaul Logistics` (Abuja, FCT) — Trust Score 95.
+4. **Admin**: `Agrolink Operations` (Lagos, Operations HQ) — Trust Score 100.
+
+### Complete End-to-End Walkthrough Flow
+
+1. Open `/auth` and select **Abdul Farms (Farmer)**.
+2. Click **Add New Produce Listing** to add a harvest lot (e.g. 500kg Tomatoes at ₦800/kg).
+3. Switch role to **FreshMart Retail (Buyer)** via the top navigation dropdown.
+4. Open `/marketplace`, filter by Vegetables or search for tomatoes, and open the produce details.
+5. Review Abdul Farms' trust breakdown and click **Confirm Order**.
+6. Switch role to **SwiftHaul Logistics (Transporter)** and navigate to the Transporter Dashboard.
+7. Find the newly requested haulage job in **Available Delivery Jobs** and click **Accept Delivery Job**.
+8. Advance the shipment status from **Accepted** → **Picked Up** → **In Transit** → **Mark Delivered**.
+9. Switch back to **FreshMart Retail (Buyer)**, confirm receipt, and submit a 5-star rating for the farmer and transporter.
+10. Verify that both counterparty trust scores increase and new trust history logs are recorded.
+11. Navigate to `/admin` to inspect nationwide platform GMV, volume, and active logistics corridors on the map.

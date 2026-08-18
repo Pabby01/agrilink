@@ -5,7 +5,7 @@ import { insights as seededInsights } from "./mock-data";
 /**
  * Mock AI service. Answers are derived from live marketplace state so the
  * assistant feels grounded. Replace `askAgrolinkAI` with a real model call
- * (Lovable AI Gateway / any LLM) later — the signature stays the same.
+ * (OpenAI / Gemini / Anthropic / any LLM) later — the signature stays the same.
  */
 
 export interface AIReply {
@@ -57,7 +57,8 @@ export function askAgrolinkAI(question: string, role: Role, state: AppState): AI
         };
       }
       return {
-        answer: "All your listings are fresh — none has been on the marketplace longer than 4 days.",
+        answer:
+          "All your listings are fresh — none has been on the marketplace longer than 4 days.",
         suggestion: "Hold your current pricing and add a new listing to capture more demand.",
         action: { label: "Create a listing", to: "/dashboard/farmer" },
       };
@@ -66,7 +67,8 @@ export function askAgrolinkAI(question: string, role: Role, state: AppState): AI
       const t = state.trust.find((x) => x.userId === "u-farmer-1")!;
       return {
         answer: `Your trust score is ${t.score} (${t.level}) with ${t.completedTransactions} completed transactions and a ${t.fulfilmentRate}% fulfilment rate.`,
-        suggestion: "Fulfil the next 3 orders on time to push into the 95+ band and rank higher in buyer search.",
+        suggestion:
+          "Fulfil the next 3 orders on time to push into the 95+ band and rank higher in buyer search.",
         action: { label: "View pending orders", to: "/dashboard/farmer" },
       };
     }
@@ -114,17 +116,20 @@ export function askAgrolinkAI(question: string, role: Role, state: AppState): AI
       const total = open.reduce((sum, d) => sum + d.fee, 0);
       return {
         answer: `There are ${open.length} open jobs worth ${naira(total)} in total payout.`,
-        suggestion: "Accept the two urgent jobs first — urgent loads carry a higher fee per kilometre.",
+        suggestion:
+          "Accept the two urgent jobs first — urgent loads carry a higher fee per kilometre.",
         action: { label: "See delivery jobs", to: "/dashboard/transporter" },
       };
     }
     const priority = [...open].sort(
-      (a, b) => (b.urgency === "Urgent" ? 1 : 0) - (a.urgency === "Urgent" ? 1 : 0) || b.fee - a.fee,
+      (a, b) =>
+        (b.urgency === "Urgent" ? 1 : 0) - (a.urgency === "Urgent" ? 1 : 0) || b.fee - a.fee,
     )[0];
     if (priority) {
       return {
         answer: `Prioritise ${priority.pickup.label} → ${priority.destination.label}: ${priority.urgency.toLowerCase()}, ${priority.distanceKm}km, ${naira(priority.fee)} payout.`,
-        suggestion: "Accept it now and mark pickup within 12 hours to protect your 99% on-time record.",
+        suggestion:
+          "Accept it now and mark pickup within 12 hours to protect your 99% on-time record.",
         action: { label: "Accept delivery", to: "/dashboard/transporter" },
       };
     }
@@ -150,7 +155,8 @@ export function askAgrolinkAI(question: string, role: Role, state: AppState): AI
     answer:
       fallback?.answer ??
       "I can help with pricing, trust evaluation, order decisions and delivery prioritisation.",
-    suggestion: fallback?.suggestion ?? "Try one of the suggested prompts to see Agrolink AI in action.",
+    suggestion:
+      fallback?.suggestion ?? "Try one of the suggested prompts to see Agrolink AI in action.",
     action: fallback?.action,
   };
 }

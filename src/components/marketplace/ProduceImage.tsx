@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import type { ProduceCategory } from "@/lib/types";
 
@@ -9,19 +10,40 @@ const tone: Record<ProduceCategory, string> = {
   Legumes: "from-accent/35 to-primary/20",
 };
 
-/**
- * Produce visual. Demo data has no bundled photography, so we render a
- * deterministic branded gradient tile with the produce initials.
- */
 export function ProduceImage({
   name,
   category,
+  src,
   className,
 }: {
   name: string;
   category: ProduceCategory;
+  src?: string;
   className?: string;
 }) {
+  const [imgError, setImgError] = useState(false);
+
+  // Auto-resolve known image filenames if not explicitly provided
+  const imageSource =
+    src ||
+    (name.toLowerCase().includes("tomato")
+      ? "/images/tomatoes.jpg"
+      : name.toLowerCase().includes("maize")
+        ? "/images/maize.jpg"
+        : name.toLowerCase().includes("cassava")
+          ? "/images/cassava.jpg"
+          : name.toLowerCase().includes("pepper")
+            ? "/images/peppers.jpg"
+            : name.toLowerCase().includes("potato")
+              ? "/images/potatoes.jpg"
+              : name.toLowerCase().includes("bean") || name.toLowerCase().includes("cowpea")
+                ? "/images/beans.jpg"
+                : name.toLowerCase().includes("plantain")
+                  ? "/images/plantain.jpg"
+                  : name.toLowerCase().includes("yam")
+                    ? "/images/yam.jpg"
+                    : undefined);
+
   const initials = name
     .split(" ")
     .map((w) => w[0])
@@ -31,16 +53,30 @@ export function ProduceImage({
 
   return (
     <div
-      role="img"
-      aria-label={`${name} — ${category}`}
       className={cn(
-        "relative grid place-items-center overflow-hidden bg-gradient-to-br",
-        tone[category],
+        "relative overflow-hidden bg-gradient-to-br",
+        tone[category] ?? "from-primary/20 to-accent/20",
         className,
       )}
     >
-      <span className="font-display text-4xl font-bold text-primary/70">{initials}</span>
-      <span className="absolute bottom-2 left-2 rounded-full bg-background/80 px-2 py-0.5 text-[11px] font-semibold">
+      {imageSource && !imgError ? (
+        <img
+          src={imageSource}
+          alt={name}
+          onError={() => setImgError(true)}
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          loading="lazy"
+        />
+      ) : (
+        <div
+          role="img"
+          aria-label={`${name} — ${category}`}
+          className="grid h-full w-full place-items-center"
+        >
+          <span className="font-display text-4xl font-bold text-primary/70">{initials}</span>
+        </div>
+      )}
+      <span className="absolute bottom-2 left-2 rounded-full bg-background/85 px-2.5 py-0.5 text-[11px] font-semibold backdrop-blur-xs">
         {category}
       </span>
     </div>
