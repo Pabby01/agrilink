@@ -10,10 +10,10 @@ export class MarketplaceController {
    * List all available produce
    */
   static listProduce(filters?: {
-    category?: string;
-    farmerId?: string;
-    includeUnavailable?: boolean;
-    query?: string;
+    category?: string | undefined;
+    farmerId?: string | undefined;
+    includeUnavailable?: boolean | undefined;
+    query?: string | undefined;
   }): DBProduce[] {
     let list = Array.from(db.produce.values());
 
@@ -54,12 +54,12 @@ export class MarketplaceController {
       qualityGrade: "Grade A" | "Grade B" | "Grade C" | "Organic Certified";
       quantityKg: number;
       pricePerKg: number;
-      minOrderKg?: number;
-      packagingType?: string;
+      minOrderKg?: number | undefined;
+      packagingType?: string | undefined;
       locationName: string;
-      latitude?: number;
-      longitude?: number;
-      images?: string[];
+      latitude?: number | undefined;
+      longitude?: number | undefined;
+      images?: string[] | undefined;
     },
   ): { success: boolean; data?: DBProduce; error?: string } {
     const farmer = db.users.get(farmerId);

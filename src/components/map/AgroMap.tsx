@@ -275,10 +275,14 @@ export function AgroMap({
 
   const [mounted, setMounted] = useState(false);
   const [vehicles, setVehicles] = useState<MovingVehicle[]>(INITIAL_VEHICLES);
-  const [selectedVehicle, setSelectedVehicle] = useState<MovingVehicle | null>(INITIAL_VEHICLES[0]);
-  const [selectedHub, setSelectedHub] = useState<HubLocation>(
-    () => AGRO_HUBS.find((h) => h.id === highlightHubId) ?? AGRO_HUBS[0],
+  const [selectedVehicle, setSelectedVehicle] = useState<MovingVehicle | null>(
+    INITIAL_VEHICLES[0] ?? null,
   );
+  const [selectedHub, setSelectedHub] = useState<HubLocation>(() => {
+    const found = AGRO_HUBS.find((h) => h.id === highlightHubId);
+    if (found) return found;
+    return AGRO_HUBS[0] as HubLocation;
+  });
   const [filterType, setFilterType] = useState<"all" | "truck" | "van" | "bike">("all");
   const [mapStyle, setMapStyle] = useState<"standard" | "satellite">("standard");
 
@@ -414,8 +418,9 @@ export function AgroMap({
 
     import("leaflet").then((L) => {
       vehicles.forEach((veh) => {
-        const p1 = veh.waypoints[veh.currentSegment];
-        const p2 = veh.waypoints[veh.currentSegment + 1] || p1;
+        const p1: [number, number] =
+          veh.waypoints[veh.currentSegment] ?? veh.waypoints[0] ?? [9.082, 8.6753];
+        const p2: [number, number] = veh.waypoints[veh.currentSegment + 1] ?? p1;
         const currentPos = interpolateCoords(p1, p2, veh.progress);
         const heading = calculateBearing(p1, p2);
 
@@ -451,9 +456,10 @@ export function AgroMap({
           iconSize: [0, 0],
         });
 
-        if (markersRef.current[veh.id]) {
-          markersRef.current[veh.id].setLatLng(currentPos);
-          markersRef.current[veh.id].setIcon(customIcon);
+        const existingMarker = markersRef.current[veh.id];
+        if (existingMarker) {
+          existingMarker.setLatLng(currentPos);
+          existingMarker.setIcon(customIcon);
         } else {
           const marker = L.marker(currentPos, { icon: customIcon }).addTo(map);
           marker.on("click", () => {
@@ -478,8 +484,9 @@ export function AgroMap({
   const focusVehicle = (veh: MovingVehicle) => {
     setSelectedVehicle(veh);
     if (mapInstanceRef.current) {
-      const p1 = veh.waypoints[veh.currentSegment];
-      const p2 = veh.waypoints[veh.currentSegment + 1] || p1;
+      const p1: [number, number] =
+        veh.waypoints[veh.currentSegment] ?? veh.waypoints[0] ?? [9.082, 8.6753];
+      const p2: [number, number] = veh.waypoints[veh.currentSegment + 1] ?? p1;
       const currentPos = interpolateCoords(p1, p2, veh.progress);
       mapInstanceRef.current.flyTo(currentPos, 9, { duration: 1 });
     }

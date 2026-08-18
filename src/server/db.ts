@@ -29,8 +29,8 @@ export interface DBSession {
   id: string;
   user_id: string;
   token_hash: string;
-  user_agent?: string;
-  ip_address?: string;
+  user_agent?: string | undefined;
+  ip_address?: string | undefined;
   expires_at: string;
   created_at: string;
 }
@@ -40,14 +40,14 @@ export interface DBKYBVerification {
   user_id: string;
   company_name: string;
   cac_rc_number: string;
-  tin_number?: string;
-  director_nin_bvn?: string;
+  tin_number?: string | undefined;
+  director_nin_bvn?: string | undefined;
   business_address: string;
   document_urls: Record<string, string>;
   status: "unsubmitted" | "pending_review" | "verified" | "rejected" | "action_required";
-  rejection_reason?: string;
-  reviewed_by?: string;
-  reviewed_at?: string;
+  rejection_reason?: string | undefined;
+  reviewed_by?: string | undefined;
+  reviewed_at?: string | undefined;
   created_at: string;
   updated_at: string;
 }
@@ -95,8 +95,8 @@ export interface DBOrder {
     | "Completed"
     | "Cancelled";
   delivery_urgency: "Standard" | "Urgent" | "Cold Chain Refrigerated";
-  delivery_id?: string;
-  cancellation_reason?: string;
+  delivery_id?: string | undefined;
+  cancellation_reason?: string | undefined;
   created_at: string;
   updated_at: string;
 }
@@ -104,23 +104,23 @@ export interface DBOrder {
 export interface DBDelivery {
   id: string;
   order_id: string;
-  transporter_id?: string;
-  vehicle_id?: string;
+  transporter_id?: string | undefined;
+  vehicle_id?: string | undefined;
   pickup_location: { label: string; lat: number; lng: number };
   dropoff_location: { label: string; lat: number; lng: number };
   corridor_name: string;
   distance_km: number;
   delivery_fee: number;
-  current_latitude?: number;
-  current_longitude?: number;
-  current_speed_kmh?: number;
-  cargo_temp_celsius?: number;
+  current_latitude?: number | undefined;
+  current_longitude?: number | undefined;
+  current_speed_kmh?: number | undefined;
+  cargo_temp_celsius?: number | undefined;
   status: "Pending" | "Accepted" | "Picked Up" | "In Transit" | "Delivered";
-  pod_recipient_name?: string;
-  pod_otp_code?: string;
-  pod_signature_url?: string;
-  estimated_arrival?: string;
-  actual_arrival?: string;
+  pod_recipient_name?: string | undefined;
+  pod_otp_code?: string | undefined;
+  pod_signature_url?: string | undefined;
+  estimated_arrival?: string | undefined;
+  actual_arrival?: string | undefined;
   created_at: string;
   updated_at: string;
 }
@@ -132,7 +132,7 @@ export interface DBVehicle {
   vehicle_type: "Truck 40T" | "Reefer 30T" | "Flatbed 20T" | "Van 5T" | "Dispatch Bike";
   capacity_kg: number;
   is_refrigerated: boolean;
-  roadworthiness_cert_url?: string;
+  roadworthiness_cert_url?: string | undefined;
   is_active: boolean;
   created_at: string;
 }
@@ -154,12 +154,12 @@ export interface DBTrustProfile {
 
 export interface DBAuditLog {
   id: string;
-  actor_id?: string;
+  actor_id?: string | undefined;
   action: string;
   target_entity: string;
-  target_id?: string;
+  target_id?: string | undefined;
   details: Record<string, unknown>;
-  ip_address?: string;
+  ip_address?: string | undefined;
   created_at: string;
 }
 
@@ -168,13 +168,13 @@ export interface DBPayment {
   order_id: string;
   payer_id: string;
   recipient_farmer_id: string;
-  recipient_transporter_id?: string;
+  recipient_transporter_id?: string | undefined;
   reference: string;
   amount: number;
   channel: string;
   status: "pending" | "successful" | "failed" | "refunded";
-  escrow_locked_at?: string;
-  escrow_released_at?: string;
+  escrow_locked_at?: string | undefined;
+  escrow_released_at?: string | undefined;
   metadata: Record<string, unknown>;
   created_at: string;
 }

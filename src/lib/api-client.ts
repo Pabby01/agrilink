@@ -146,8 +146,8 @@ export const api = {
     async adminReview(data: {
       kybId: string;
       approved: boolean;
-      tier?: 2 | 3;
-      rejectionReason?: string;
+      tier?: 2 | 3 | undefined;
+      rejectionReason?: string | undefined;
     }) {
       return apiFetch<{ success: boolean }>("/api/kyb/admin/review", {
         method: "POST",
@@ -157,7 +157,11 @@ export const api = {
   },
 
   produce: {
-    async list(params?: { category?: string; farmerId?: string; q?: string }) {
+    async list(params?: {
+      category?: string | undefined;
+      farmerId?: string | undefined;
+      q?: string | undefined;
+    } | undefined) {
       const query = new URLSearchParams();
       if (params?.category) query.set("category", params.category);
       if (params?.farmerId) query.set("farmerId", params.farmerId);
@@ -172,12 +176,12 @@ export const api = {
       qualityGrade: "Grade A" | "Grade B" | "Grade C" | "Organic Certified";
       quantityKg: number;
       pricePerKg: number;
-      minOrderKg?: number;
-      packagingType?: string;
+      minOrderKg?: number | undefined;
+      packagingType?: string | undefined;
       locationName: string;
-      latitude?: number;
-      longitude?: number;
-      images?: string[];
+      latitude?: number | undefined;
+      longitude?: number | undefined;
+      images?: string[] | undefined;
     }) {
       return apiFetch<Produce>("/api/produce/create", {
         method: "POST",
@@ -229,7 +233,7 @@ export const api = {
       return apiFetch<Delivery[]>("/api/deliveries/available");
     },
 
-    async acceptJob(deliveryId: string, vehicleId?: string) {
+    async acceptJob(deliveryId: string, vehicleId?: string | undefined) {
       return apiFetch<Delivery>("/api/deliveries/accept", {
         method: "POST",
         body: JSON.stringify({ deliveryId, vehicleId }),
@@ -239,10 +243,10 @@ export const api = {
     async updateMilestone(data: {
       deliveryId: string;
       status: "Picked Up" | "In Transit" | "Delivered";
-      latitude?: number;
-      longitude?: number;
-      speedKmh?: number;
-      cargoTempCelsius?: number;
+      latitude?: number | undefined;
+      longitude?: number | undefined;
+      speedKmh?: number | undefined;
+      cargoTempCelsius?: number | undefined;
     }) {
       return apiFetch<Delivery>("/api/deliveries/milestone", {
         method: "POST",

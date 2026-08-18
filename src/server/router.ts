@@ -134,7 +134,7 @@ export async function handleApiRequest(req: Request): Promise<Response | null> {
     if (path.startsWith("/api/produce/") && path.endsWith("/toggle") && method === "PATCH") {
       const user = getAuthUser(req);
       if (!user) return json({ success: false, error: "Unauthorized" }, 401);
-      const produceId = path.split("/")[3];
+      const produceId = path.split("/")[3] || "";
       const res = MarketplaceController.toggleAvailability(user.id, produceId);
       return json(res, res.success ? 200 : 400);
     }

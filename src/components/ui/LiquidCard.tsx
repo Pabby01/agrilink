@@ -105,7 +105,7 @@ export function LiquidCard({
       onMouseLeave={() => !disabled && setIsHovered(false)}
       onTouchStart={handleTouch}
       onClick={onClick}
-      whileTap={!disabled ? { scale: 0.985 } : undefined}
+      whileTap={{ scale: !disabled ? 0.985 : 1 }}
       {...(props as object)}
     >
       {/* Rising Liquid Container */}

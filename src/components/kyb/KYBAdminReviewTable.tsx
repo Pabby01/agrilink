@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { api } from "@/lib/api-client";
 import { toast } from "sonner";
 
@@ -39,7 +40,7 @@ export function KYBAdminReviewTable() {
     setLoading(true);
     const res = await api.kyb.adminList();
     if (res.success && res.data) {
-      setVerifications(res.data);
+      setVerifications(res.data as unknown as KYBVerificationItem[]);
     }
     setLoading(false);
   };
@@ -50,12 +51,20 @@ export function KYBAdminReviewTable() {
 
   const handleReview = async (kybId: string, approved: boolean) => {
     setActionLoading(true);
-    const res = await api.kyb.adminReview({
+    const payload: {
+      kybId: string;
+      approved: boolean;
+      tier?: 2 | 3 | undefined;
+      rejectionReason?: string | undefined;
+    } = {
       kybId,
       approved,
       tier: 2,
-      rejectionReason: approved ? undefined : rejectReason || "Documents failed validation.",
-    });
+    };
+    if (!approved) {
+      payload.rejectionReason = rejectReason || "Documents failed validation.";
+    }
+    const res = await api.kyb.adminReview(payload);
 
     setActionLoading(false);
     if (res.success) {

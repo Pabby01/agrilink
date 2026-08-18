@@ -128,14 +128,15 @@ function AuthPage() {
     setLoginLoading(false);
 
     if (res.success && res.data?.user) {
-      setRole(res.data.user.role);
-      toast.success(`Welcome back, ${res.data.user.full_name}!`);
+      const user = res.data.user as { role: Role; full_name?: string };
+      setRole(user.role);
+      toast.success(`Welcome back, ${user.full_name || "Partner"}!`);
       const targetHome =
-        res.data.user.role === "farmer"
+        user.role === "farmer"
           ? "/dashboard/farmer"
-          : res.data.user.role === "buyer"
+          : user.role === "buyer"
             ? "/dashboard/buyer"
-            : res.data.user.role === "transporter"
+            : user.role === "transporter"
               ? "/dashboard/transporter"
               : "/admin";
       router.navigate({ to: targetHome as never });
@@ -164,8 +165,9 @@ function AuthPage() {
     setRegLoading(false);
 
     if (res.success && res.data?.user) {
-      setRole(res.data.user.role);
-      toast.success(`Account registered successfully as ${res.data.user.role}!`);
+      const user = res.data.user as { role: Role };
+      setRole(user.role);
+      toast.success(`Account registered successfully as ${user.role}!`);
       const targetHome =
         regRole === "farmer"
           ? "/dashboard/farmer"
